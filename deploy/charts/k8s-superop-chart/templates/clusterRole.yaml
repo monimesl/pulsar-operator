@@ -1,0 +1,61 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Values.clusterRoleName }}
+  labels:
+  {{- include "k8s-superop-chart.labels" . | nindent 4 }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - events
+      - secrets
+      - services
+      - endpoints
+      - configmaps
+      - persistentvolumeclaims
+    verbs:
+      - '*'
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs:
+      - get
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+      - daemonsets
+      - replicasets
+      - statefulsets
+    verbs:
+      - '*'
+  - apiGroups:
+      - apps
+    resourceNames:
+      - k8s-superop-chart
+    resources:
+      - deployments/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - policy
+    resources:
+      - poddisruptionbudgets
+    verbs:
+      - '*'
+  - apiGroups:
+      - batch
+    resources:
+      - '*'
+    verbs:
+      - '*'
+  - apiGroups:
+      - pulsar.k8s-superop.skulup.com
+    resources:
+      - '*'
+    verbs:
+      - '*'
+---
