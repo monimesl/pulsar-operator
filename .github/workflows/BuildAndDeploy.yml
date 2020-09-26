@@ -70,7 +70,7 @@ jobs:
         name: Build & push Docker image
         with:
           registry: docker.io
-          image: skulup/k8s-superop
+          image: skulup/pulsar-operator
           tag: latest
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
