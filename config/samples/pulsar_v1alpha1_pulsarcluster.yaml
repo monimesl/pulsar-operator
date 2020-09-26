@@ -1,0 +1,17 @@
+apiVersion: pulsar.skulup.com/v1alpha1
+kind: PulsarCluster
+metadata:
+  name: cluster-1
+  namespace: pulsar
+spec:
+  size: 1
+  broker:
+    zookeeperServers: "main-zookeeper.zookeeper.svc.cluster.local:2181"
+    configs: |
+      managedLedgerDefaultEnsembleSize: 1
+      managedLedgerDefaultWriteQuorum: 1
+      managedLedgerDefaultAckQuorum: 1
+    pod:
+      env:
+        - name: PULSAR_MEM
+          value: "-Xms400m -Xmx400m"

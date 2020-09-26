@@ -1,0 +1,6 @@
+## Append samples you want in your CSV to this file as resources ##
+resources:
+- pulsar_v1alpha1_pulsarcluster.yaml
+- pulsar_v1alpha1_pulsarmanager.yaml
+- pulsar_v1alpha1_pulsarproxy.yaml
+# +kubebuilder:scaffold:manifestskustomizesamples

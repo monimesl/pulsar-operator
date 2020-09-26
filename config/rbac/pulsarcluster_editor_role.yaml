@@ -1,0 +1,24 @@
+# permissions for end users to edit pulsarclusters.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pulsarcluster-editor-role
+rules:
+- apiGroups:
+  - pulsar.skulup.com
+  resources:
+  - pulsarclusters
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - pulsar.skulup.com
+  resources:
+  - pulsarclusters/status
+  verbs:
+  - get

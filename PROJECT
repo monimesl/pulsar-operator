@@ -1,0 +1,17 @@
+domain: skulup.com
+layout: go.kubebuilder.io/v2
+projectName: pulsar-operator
+repo: github.com/skulup/pulsar-operator
+resources:
+- group: pulsar
+  kind: PulsarCluster
+  version: v1alpha1
+- group: pulsar
+  kind: PulsarManager
+  version: v1alpha1
+- group: pulsar
+  kind: PulsarProxy
+  version: v1alpha1
+version: 3-alpha
+plugins:
+  go.sdk.operatorframework.io/v2-alpha: {}

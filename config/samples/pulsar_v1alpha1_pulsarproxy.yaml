@@ -1,0 +1,15 @@
+apiVersion: pulsar.skulup.com/v1alpha1
+kind: PulsarProxy
+metadata:
+  name: proxies-1
+  namespace: pulsar
+spec:
+  count: 1
+  proxy:
+    configs: |
+      zookeeperServers: main-zookeeper.zookeeper.svc.cluster.local:2181
+      configurationStoreServers: main-zookeeper.zookeeper.svc.cluster.local:2181
+    pod:
+      env:
+        - name: PULSAR_MEM
+          value: "-Xms512m -Xmx512m -XX:MaxDirectMemorySize=1g"
