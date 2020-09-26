@@ -34,7 +34,7 @@ jobs:
           mkdir -p deploy/crds
           cp config/crd/bases/* deploy/crds
 
-      - name: Build Helm Charts
+      - name: Build Helm Chart
         run: |
           git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/skulup/charts.git
           mkdir -p output
@@ -43,7 +43,7 @@ jobs:
           helm package deploy/charts/pulsar-operator-chart/ -d output
           helm repo index --url https://skulup.github.io/charts/ output --merge index.yaml
 
-      - name: Pushes to another repository
+      - name: Index Helm Chart
         uses: cpina/github-action-push-to-another-repository@master
         with:
           source-directory: 'output'
@@ -53,7 +53,7 @@ jobs:
         env:
             API_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN_GITHUB }}
 
-      - name: Remove Artifacts
+      - name: Remove Helm Artifacts
         run: |
           rm -r charts
           rm -r output
@@ -67,7 +67,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: mr-smithers-excellent/docker-build-push@v4
-        name: Build & push Docker image
+        name: Deploy Docker image
         with:
           registry: docker.io
           image: skulup/pulsar-operator
