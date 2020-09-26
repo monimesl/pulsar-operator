@@ -50,8 +50,8 @@ func (r Reconciler) Configure(ctx reconciler.Context) error {
 		Complete(r)
 }
 
-// +kubebuilder:rbac:groups=pulsar.k8s-superop.skulup.com,resources=pulsarmanagers,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=pulsar.k8s-superop.skulup.com,resources=pulsarmanagers/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=pulsar.skulup.com,resources=pulsarmanagers,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=pulsar.skulup.com,resources=pulsarmanagers/status,verbs=get;update;patch
 func (r Reconciler) Reconcile(request reconcile.Request) (reconcile.Result, error) {
 	manager := &v1alpha1.PulsarManager{}
 	return r.Run(request, manager, func() error {

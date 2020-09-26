@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "k8s-superop-chart.fullname" . }}
+  name: {{ include "pulsar-operator-chart.fullname" . }}
   labels:
-    {{- include "k8s-superop-chart.labels" . | nindent 4 }}
+    {{- include "pulsar-operator-chart.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "k8s-superop-chart.selectorLabels" . | nindent 6 }}
+      {{- include "pulsar-operator-chart.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "k8s-superop-chart.selectorLabels" . | nindent 8 }}
+        {{- include "pulsar-operator-chart.selectorLabels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       containers:

@@ -48,8 +48,8 @@ func (r *Reconciler) Configure(ctx reconciler.Context) error {
 		Complete(r)
 }
 
-// +kubebuilder:rbac:groups=pulsar.k8s-superop.skulup.com,resources=pulsarproxies,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=pulsar.k8s-superop.skulup.com,resources=pulsarproxies/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=pulsar.skulup.com,resources=pulsarproxies,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=pulsar.skulup.com,resources=pulsarproxies/status,verbs=get;update;patch
 func (r *Reconciler) Reconcile(request reconcile.Request) (reconcile.Result, error) {
 	proxy := &v1alpha1.PulsarProxy{}
 	return r.Run(request, proxy, func() error {

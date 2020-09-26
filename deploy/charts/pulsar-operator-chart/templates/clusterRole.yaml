@@ -3,7 +3,7 @@ kind: ClusterRole
 metadata:
   name: {{ .Values.clusterRoleName }}
   labels:
-  {{- include "k8s-superop-chart.labels" . | nindent 4 }}
+  {{- include "pulsar-operator-chart.labels" . | nindent 4 }}
 rules:
   - apiGroups:
       - ""
@@ -35,7 +35,7 @@ rules:
   - apiGroups:
       - apps
     resourceNames:
-      - k8s-superop-chart
+      - pulsar-operator-chart
     resources:
       - deployments/finalizers
     verbs:
@@ -53,7 +53,7 @@ rules:
     verbs:
       - '*'
   - apiGroups:
-      - pulsar.k8s-superop.skulup.com
+      - pulsar.pulsar-operator.skulup.com
     resources:
       - '*'
     verbs:

@@ -1,0 +1,11 @@
+serviceAccountName: pulsar-operator-acc
+clusterRoleName: pulsar-operator-cr
+clusterRoleBindingName: pulsar-operator-crb
+defaultImage: skulup/pulsar-operator:latest
+defaultImagePullPolicy: Always
+namespacesToWatch: # list of namespaces the operator will waatch; default to all
+leaderElectionPrefix: ""
+
+
+
+

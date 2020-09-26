@@ -54,6 +54,8 @@ func (r *Reconciler) Configure(ctx reconciler.Context) error {
 		Complete(r)
 }
 
+// +kubebuilder:rbac:groups=pulsar.skulup.com,resources=pulsarclusters,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=pulsar.skulup.com,resources=pulsarclusters/status,verbs=get;update;patch
 func (r *Reconciler) Reconcile(request reconcile.Request) (reconcile.Result, error) {
 	cluster := &v1alpha1.PulsarCluster{}
 	return r.Run(request, cluster, func() error {

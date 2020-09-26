@@ -40,7 +40,7 @@ jobs:
           mkdir -p output
           mv charts/index.yaml output
 
-          helm package deploy/charts/k8s-superop-chart/ -d output
+          helm package deploy/charts/pulsar-operator-chart/ -d output
           helm repo index --url https://skulup.github.io/charts/ output --merge index.yaml
 
       - name: Pushes to another repository
