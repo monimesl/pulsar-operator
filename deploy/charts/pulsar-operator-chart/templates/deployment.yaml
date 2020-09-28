@@ -27,10 +27,6 @@ spec:
           env:
             - name: LEADER_ELECTION_NAMESPACE
               value: {{ .Release.Namespace }}
-            {{- if .Values.leaderElectionPrefix }}
-            - name: LEADER_ELECTION_ID_PREFIX
-              value: {{ .Values.leaderElectionPrefix }}
-            {{ end }}
             {{- if .Values.namespacesToWatch }}
             - name: NAMESPACES_TO_WATCH
               value: {{ join "," .Values.namespacesToWatch }}
