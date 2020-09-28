@@ -34,10 +34,10 @@ var (
 		reconcileSuperUserAccount,
 	}
 )
+
 // Controller reconciles a PulsarManager object
 type Reconciler struct {
 	reconciler.Context
-
 }
 
 func (r Reconciler) Configure(ctx reconciler.Context) error {
