@@ -35,10 +35,7 @@ jobs:
 
       - name: Build Helm Chart
         run: |
-          git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/skulup/charts.git
-          mkdir -p output
-          mv charts/index.yaml output
-
+          git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/skulup/charts.git output
           helm package deploy/charts/pulsar-operator-chart/ -d output
           helm repo index --url https://skulup.github.io/charts/ output --merge index.yaml
 
@@ -54,7 +51,6 @@ jobs:
 
       - name: Remove Helm Artifacts
         run: |
-          rm -r charts
           rm -r output
           rm -r deploy/charts/pulsar-operator-chart/crds
 
