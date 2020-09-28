@@ -1,6 +1,6 @@
 apiVersion: v2
 name: pulsar-operator
-description: A Helm chart for the Kubernetes superoperator
+description: Helm chart for https://github.com/skulup/pulsar-operator
 type: application
 version: 0.1.0
 appVersion: 1.16.0

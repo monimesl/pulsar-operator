@@ -47,7 +47,7 @@ func init() {
 }
 
 func main() {
-	config, options := configs.GetManagerParams(scheme, "pulsar-operator", pkg.Domain)
+	config, options := configs.GetManagerParams(scheme, pkg.OperatorName, pkg.Domain)
 	mgr, err := manager.New(config, options)
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
@@ -60,5 +60,7 @@ func main() {
 		setupLog.Error(err, "reconciler config error")
 		os.Exit(1)
 	}
-	log.Fatal(mgr.Start(ctrl.SetupSignalHandler()))
+	if err = mgr.Start(ctrl.SetupSignalHandler()); err != nil {
+		log.Fatal(err)
+	}
 }

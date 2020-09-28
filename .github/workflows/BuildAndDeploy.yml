@@ -32,7 +32,9 @@ jobs:
         run: |
           make manifests
           mkdir -p deploy/crds
+          mkdir -p deploy/charts/pulsar-operator-chart/crds
           cp config/crd/bases/* deploy/crds
+          cp config/crd/bases/* deploy/charts/pulsar-operator-chart/crds
 
       - name: Build Helm Chart
         run: |
@@ -57,6 +59,7 @@ jobs:
         run: |
           rm -r charts
           rm -r output
+          rm -r deploy/charts/pulsar-operator-chart/crds
 
       - name: Commit Generated CRDs
         uses: EndBug/add-and-commit@v4

@@ -24,21 +24,6 @@ import (
 	"strings"
 )
 
-var (
-	// ServicePort The broker non-TLS port
-	ServicePort = util.Int32Or("BROKER_SERVICE_PORT", 6650)
-	// ServicePortTLS The broker TLS port
-	ServicePortTLS = util.Int32Or("BROKER_SERVICE_PORT_TLS", 6651)
-	// WebServicePort The broker non-TLS web port
-	WebServicePort = util.Int32Or("BROKER_WEB_SERVICE_PORT", 8080)
-	// WebServicePortTLS The broker TLS web port
-	WebServicePortTLS = util.Int32Or("BROKER_WEB_SERVICE_PORT_TLS", 8443)
-	// ManagerBackendPort The manager API port
-	ManagerBackendPort = util.Int32Or("MANAGER_BACKEND_SERVICE_PORT", 7750)
-	// ManagerFrontendPort The manager UI port
-	ManagerFrontendPort = util.Int32Or("MANAGER_FRONTEND_SERVICE_PORT", 9527)
-)
-
 // OperatorName defines the name of the operator
 const OperatorName = "pulsar-operator"
 
@@ -58,6 +43,21 @@ const (
 const LabelCluster = "pulsar.skulup.com/cluster"
 const annPrometheusScrape = "prometheus.io/scrape"
 const annPrometheusPort = "prometheus.io/port"
+
+var (
+	// ServicePort The broker non-TLS port
+	ServicePort = util.Int32Or("BROKER_SERVICE_PORT", 6650)
+	// ServicePortTLS The broker TLS port
+	ServicePortTLS = util.Int32Or("BROKER_SERVICE_PORT_TLS", 6651)
+	// WebServicePort The broker non-TLS web port
+	WebServicePort = util.Int32Or("BROKER_WEB_SERVICE_PORT", 8080)
+	// WebServicePortTLS The broker TLS web port
+	WebServicePortTLS = util.Int32Or("BROKER_WEB_SERVICE_PORT_TLS", 8443)
+	// ManagerBackendPort The manager API port
+	ManagerBackendPort = util.Int32Or("MANAGER_BACKEND_SERVICE_PORT", 7750)
+	// ManagerFrontendPort The manager UI port
+	ManagerFrontendPort = util.Int32Or("MANAGER_FRONTEND_SERVICE_PORT", 9527)
+)
 
 // IsApplyConfigFromEnvScriptFaulty returns false for image tag >= 2.6.0 and true otherwise.
 // Pulsar below version 2.6.0 has a buggy `apply-config-from-env.py` - it fails to update
