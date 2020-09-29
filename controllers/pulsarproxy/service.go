@@ -22,7 +22,7 @@ import (
 	"github.com/skulup/operator-pkg/k8s/service"
 	"github.com/skulup/operator-pkg/reconciler"
 	"github.com/skulup/pulsar-operator/api/v1alpha1"
-	"github.com/skulup/pulsar-operator/pkg"
+	"github.com/skulup/pulsar-operator/internal"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
@@ -69,12 +69,12 @@ func reconcileService(ctx reconciler.Context, proxy *v1alpha1.PulsarProxy, newSv
 }
 
 func createService(proxy *v1alpha1.PulsarProxy, name string, clusterIp string) *v1.Service {
-	labels := pkg.GenerateLabels(pkg.Proxy, proxy.Spec.Proxy.GeneratePodLabels())
+	labels := internal.GenerateLabels(internal.Proxy, proxy.Spec.Proxy.GeneratePodLabels())
 	return service.New(serviceNamespace(proxy), name, labels, v1.ServiceSpec{
 		Type:      v1.ServiceTypeClusterIP,
 		ClusterIP: clusterIp,
 		Selector:  labels,
-		Ports:     pkg.CreateServicePorts(),
+		Ports:     internal.CreateServicePorts(),
 	})
 }
 

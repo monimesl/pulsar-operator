@@ -18,7 +18,7 @@ package v1alpha1
 
 import (
 	"github.com/skulup/operator-pkg/types"
-	"github.com/skulup/pulsar-operator/pkg"
+	"github.com/skulup/pulsar-operator/internal"
 	v12 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -58,7 +58,7 @@ func (in Broker) GeneratePodLabels(clusterName string) map[string]string {
 	for k, v := range in.PodConfig.Labels {
 		labels[k] = v
 	}
-	labels[pkg.LabelCluster] = clusterName
+	labels[internal.LabelCluster] = clusterName
 	return labels
 }
 
