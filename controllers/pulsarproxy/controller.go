@@ -34,6 +34,7 @@ var (
 	}
 )
 
+// Reconciler reconciles a PulsarProxy object
 type Reconciler struct {
 	reconciler.Context
 }

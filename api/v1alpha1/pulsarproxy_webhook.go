@@ -19,7 +19,6 @@ package v1alpha1
 import (
 	"github.com/skulup/operator-pkg/webhooks"
 	"k8s.io/apimachinery/pkg/runtime"
-	ctrl "sigs.k8s.io/controller-runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 )
@@ -27,11 +26,6 @@ import (
 // log is for logging in this package.
 var pulsarproxylog = logf.Log.WithName("pulsarproxy-resource")
 
-func (in *PulsarProxy) SetupWebhookWithManager(mgr ctrl.Manager) error {
-	return ctrl.NewWebhookManagedBy(mgr).
-		For(in).
-		Complete()
-}
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 

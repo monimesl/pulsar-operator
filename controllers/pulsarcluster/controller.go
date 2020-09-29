@@ -38,6 +38,7 @@ var (
 	}
 )
 
+// Reconciler reconciles a PulsarCluster object
 type Reconciler struct {
 	reconciler.Context
 }

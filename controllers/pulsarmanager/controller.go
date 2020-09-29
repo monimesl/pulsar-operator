@@ -35,7 +35,7 @@ var (
 	}
 )
 
-// Controller reconciles a PulsarManager object
+// Reconciler reconciles a PulsarManager object
 type Reconciler struct {
 	reconciler.Context
 }

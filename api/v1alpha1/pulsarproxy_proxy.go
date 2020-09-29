@@ -41,7 +41,7 @@ type Proxy struct {
 	PodConfig types.PodConfig `json:"pod,omitempty"`
 }
 
-// Generate the labels of the proxy pod
+// GeneratePodLabels generates the labels of the proxy pod
 func (in Proxy) GeneratePodLabels() map[string]string {
 	return in.PodConfig.Labels
 }
