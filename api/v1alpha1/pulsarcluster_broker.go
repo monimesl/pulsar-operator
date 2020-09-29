@@ -51,7 +51,7 @@ type Broker struct {
 	PodConfig types.PodConfig `json:"pod,omitempty"`
 }
 
-// Generate the labels of the broker pod and adds
+// GeneratePodLabels generates the labels of the broker pod and adds
 // a `cluster` label with the value of the cluster name
 func (in Broker) GeneratePodLabels(clusterName string) map[string]string {
 	labels := map[string]string{}

@@ -26,8 +26,9 @@ import (
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
 const (
-	managerDefaultDbUserName    = "pulsar"
-	managerDefaultDbPassword    = "pulsar"
+	managerDefaultDbUserName = "pulsar"
+	managerDefaultDbPassword = "pulsar"
+	// ManagerDefaultSuperUsername defines the default username of the manager's superuser
 	ManagerDefaultSuperUsername = "admin"
 	// ManagerDefaultImageRepository defines the default pulsar-manager image repository
 	ManagerDefaultImageRepository = "apachepulsar/pulsar-manager"

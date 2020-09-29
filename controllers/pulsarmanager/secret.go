@@ -58,7 +58,7 @@ func reconcileSuperUserAccount(ctx reconciler.Context, manager *v1alpha1.PulsarM
 			var resp *http.Response
 			// Secret found
 			managerBackendUrl := fmt.Sprintf("http://%s.%s.svc.cluster.local:7750/pulsar-manager",
-				ServiceName(manager), ServiceNamespace(manager))
+				serviceName(manager), serviceNamespace(manager))
 			if resp, err = http.Get(managerBackendUrl + "/csrf-token"); err == nil {
 				defer resp.Body.Close()
 				if body, err = ioutil.ReadAll(resp.Body); err == nil {

@@ -30,8 +30,8 @@ import (
 func reconcileService(ctx reconciler.Context, manager *v1alpha1.PulsarManager) error {
 	svc := &v1.Service{}
 	return ctx.GetResource(types.NamespacedName{
-		Namespace: ServiceNamespace(manager),
-		Name:      ServiceName(manager),
+		Namespace: serviceNamespace(manager),
+		Name:      serviceName(manager),
 	}, svc,
 		func() (err error) {
 			return // Service Found
@@ -52,7 +52,7 @@ func reconcileService(ctx reconciler.Context, manager *v1alpha1.PulsarManager) e
 
 func createService(manager *v1alpha1.PulsarManager) *v1.Service {
 	labels := internal.GenerateLabels(internal.Manager, manager.Spec.GeneratePodLabels())
-	return service.New(ServiceNamespace(manager), ServiceName(manager), labels, v1.ServiceSpec{
+	return service.New(serviceNamespace(manager), serviceName(manager), labels, v1.ServiceSpec{
 		Type:     v1.ServiceTypeClusterIP,
 		Selector: labels,
 		Ports: []v1.ServicePort{
@@ -70,10 +70,10 @@ func createService(manager *v1alpha1.PulsarManager) *v1.Service {
 	})
 }
 
-func ServiceNamespace(manager *v1alpha1.PulsarManager) string {
+func serviceNamespace(manager *v1alpha1.PulsarManager) string {
 	return manager.GetNamespace()
 }
 
-func ServiceName(c *v1alpha1.PulsarManager) string {
+func serviceName(c *v1alpha1.PulsarManager) string {
 	return fmt.Sprintf("%s-pulsar-manager", c.GetName())
 }
