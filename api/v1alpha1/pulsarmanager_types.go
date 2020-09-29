@@ -17,7 +17,7 @@
 package v1alpha1
 
 import (
-	"github.com/skulup/pulsar-operator/pkg"
+	"github.com/skulup/operator-pkg/types"
 	v12 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -62,7 +62,7 @@ type PulsarManagerSpec struct {
 	LogLevel string `json:"logLevel,omitempty"`
 
 	// Image defines the container image to use. It defaults to apachepulsar/pulsar-manager:latest
-	Image pkg.Image `json:"image,omitempty"`
+	Image types.Image `json:"image,omitempty"`
 
 	// Labels defines the labels to attach to the broker deployment
 	Labels map[string]string `json:"labels,omitempty"`
@@ -71,7 +71,7 @@ type PulsarManagerSpec struct {
 	Annotations map[string]string `json:"annotations,omitempty"`
 
 	// PodConfig defines common configuration for the broker pods
-	PodConfig pkg.PodConfig `json:"pod,omitempty"`
+	PodConfig types.PodConfig `json:"pod,omitempty"`
 }
 
 // GeneratePodLabels generates the labels of the manager pod
@@ -96,46 +96,6 @@ type PulsarManager struct {
 	Status PulsarManagerStatus `json:"status,omitempty"`
 }
 
-// SetSpecDefaults sets the defaults properties of the manager spec and returns
-// true if any property was set otherwise false
-func (in *PulsarManager) SetSpecDefaults() (changed bool) {
-	if in.Spec.Username == "" {
-		changed = true
-		in.Spec.Username = ManagerDefaultSuperUsername
-	}
-	if in.Spec.DbUsername == "" {
-		changed = true
-		in.Spec.DbUsername = managerDefaultDbUserName
-	}
-	if in.Spec.DbPassword == "" {
-		changed = true
-		in.Spec.DbPassword = managerDefaultDbPassword
-	}
-	if in.Spec.LogLevel == "" {
-		changed = true
-		in.Spec.LogLevel = ManagerDefaultLogLevel
-	}
-	if in.Spec.Image.Repository == "" {
-		changed = true
-		in.Spec.Image.Repository = ManagerDefaultImageRepository
-	}
-	if in.Spec.Image.Tag == "" {
-		changed = true
-		in.Spec.Image.Tag = ManagerDefaultImageTag
-	}
-	if in.Spec.Image.PullPolicy == "" {
-		changed = true
-		in.Spec.Image.PullPolicy = v12.PullIfNotPresent
-	}
-	return
-}
-
-// Set the defaults properties of the manager status and returns
-// true if any property was set otherwise false
-func (in *PulsarManager) SetStatusDefaults() bool {
-	return false
-}
-
 // +kubebuilder:object:root=true
 
 // PulsarManagerList contains a list of PulsarManager
@@ -147,4 +107,33 @@ type PulsarManagerList struct {
 
 func init() {
 	SchemeBuilder.Register(&PulsarManager{}, &PulsarManagerList{})
+}
+
+func (in *PulsarManager) setSpecDefaults() {
+	if in.Spec.Username == "" {
+		in.Spec.Username = ManagerDefaultSuperUsername
+	}
+	if in.Spec.DbUsername == "" {
+		in.Spec.DbUsername = managerDefaultDbUserName
+	}
+	if in.Spec.DbPassword == "" {
+		in.Spec.DbPassword = managerDefaultDbPassword
+	}
+	if in.Spec.LogLevel == "" {
+		in.Spec.LogLevel = ManagerDefaultLogLevel
+	}
+	if in.Spec.Image.Repository == "" {
+		in.Spec.Image.Repository = ManagerDefaultImageRepository
+	}
+	if in.Spec.Image.Tag == "" {
+		in.Spec.Image.Tag = ManagerDefaultImageTag
+	}
+	if in.Spec.Image.PullPolicy == "" {
+		in.Spec.Image.PullPolicy = v12.PullIfNotPresent
+	}
+	return
+}
+
+func (in *PulsarManager) setStatusDefaults() bool {
+	return false
 }

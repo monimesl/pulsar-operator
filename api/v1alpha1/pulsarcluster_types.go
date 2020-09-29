@@ -47,25 +47,12 @@ type PulsarClusterSpec struct {
 	Broker Broker `json:"broker,omitempty"`
 }
 
-func (in *PulsarClusterSpec) setDefaults() (changed bool) {
-	changed = in.Broker.SetDefaults()
-	return
-}
-
 // PulsarClusterStatus defines the observed state of PulsarCluster
 type PulsarClusterStatus struct {
 	Stage ClusterStage `json:"stage,omitempty"`
 }
 
-func (in *PulsarClusterStatus) setDefaults() (changed bool) {
-	if in.Stage == "" {
-		changed = true
-		in.Stage = ClusterStageInitializing
-	}
-	return
-}
-
-// Chech if the cluster has completed initialization
+// Check if the cluster has completed initialization
 func (in *PulsarCluster) IsInitialized() bool {
 	return in.Status.Stage != ClusterStageInitializing
 }
@@ -82,18 +69,6 @@ type PulsarCluster struct {
 	Status PulsarClusterStatus `json:"status,omitempty"`
 }
 
-// Set the defaults properties of the cluster spec and returns
-// true if any property was set otherwise false
-func (in *PulsarCluster) SetSpecDefaults() bool {
-	return in.Spec.setDefaults()
-}
-
-// Set the defaults properties of the cluster status and returns
-// true if any property was set otherwise false
-func (in *PulsarCluster) SetStatusDefaults() bool {
-	return in.Status.setDefaults()
-}
-
 // +kubebuilder:object:root=true
 
 // PulsarClusterList contains a list of PulsarCluster
@@ -105,4 +80,17 @@ type PulsarClusterList struct {
 
 func init() {
 	SchemeBuilder.Register(&PulsarCluster{}, &PulsarClusterList{})
+}
+
+func (in *PulsarCluster) setSpecDefaults() {
+	if in.Spec.Size == 0 {
+		in.Spec.Size = 1
+	}
+	in.Spec.Broker.setDefaults()
+}
+
+func (in *PulsarCluster) setStatusDefaults() {
+	if in.Status.Stage == "" {
+		in.Status.Stage = ClusterStageInitializing
+	}
 }

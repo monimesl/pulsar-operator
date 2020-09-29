@@ -4,21 +4,21 @@ kind: ClusterRole
 metadata:
   name: pulsarproxy-editor-role
 rules:
-- apiGroups:
-  - pulsar.skulup.com
-  resources:
-  - pulsarproxies
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - pulsar.skulup.com
-  resources:
-  - pulsarproxies/status
-  verbs:
-  - get
+  - apiGroups:
+      - pulsar.skulup.com
+    resources:
+      - pulsarproxies
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - pulsar.skulup.com
+    resources:
+      - pulsarproxies/status
+    verbs:
+      - get

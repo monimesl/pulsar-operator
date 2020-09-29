@@ -4,21 +4,21 @@ kind: ClusterRole
 metadata:
   name: pulsarcluster-editor-role
 rules:
-- apiGroups:
-  - pulsar.skulup.com
-  resources:
-  - pulsarclusters
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - pulsar.skulup.com
-  resources:
-  - pulsarclusters/status
-  verbs:
-  - get
+  - apiGroups:
+      - pulsar.skulup.com
+    resources:
+      - pulsarclusters
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - pulsar.skulup.com
+    resources:
+      - pulsarclusters/status
+    verbs:
+      - get

@@ -17,7 +17,8 @@
 package v1alpha1
 
 import (
-	"github.com/skulup/pulsar-operator/pkg"
+	"github.com/skulup/operator-pkg/types"
+	"github.com/skulup/pulsar-operator/internal"
 	v12 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -36,7 +37,7 @@ type Broker struct {
 	// Configs defines the configurations in `conf/broker.conf` files in pulsar
 	Configs string `json:"configs,omitempty"`
 	// Image defines the container image to use. It defaults to apachepulsar/pulsar:latest
-	Image pkg.Image `json:"image,omitempty"`
+	Image types.Image `json:"image,omitempty"`
 
 	// Labels defines the labels to attach to the broker deployment
 	Labels map[string]string `json:"labels,omitempty"`
@@ -47,7 +48,7 @@ type Broker struct {
 	Annotations map[string]string `json:"annotations,omitempty"`
 
 	// PodConfig defines common configuration for the broker pods
-	PodConfig pkg.PodConfig `json:"pod,omitempty"`
+	PodConfig types.PodConfig `json:"pod,omitempty"`
 }
 
 // Generate the labels of the broker pod and adds
@@ -57,27 +58,23 @@ func (in Broker) GeneratePodLabels(clusterName string) map[string]string {
 	for k, v := range in.PodConfig.Labels {
 		labels[k] = v
 	}
-	labels[pkg.LabelCluster] = clusterName
+	labels[internal.LabelCluster] = clusterName
 	return labels
 }
 
 // Set the defaults properties of the broker and returns
 // true if any property was set otherwise false
-func (in *Broker) SetDefaults() (changed bool) {
+func (in *Broker) setDefaults() {
 	if in.ConfigurationStoreServers == "" {
-		changed = true
 		in.ConfigurationStoreServers = in.ZookeeperServers
 	}
 	if in.Image.Repository == "" {
-		changed = true
 		in.Image.Repository = defaultRepository
 	}
 	if in.Image.Tag == "" {
-		changed = true
 		in.Image.Tag = defaultTag
 	}
 	if in.Image.PullPolicy == "" {
-		changed = true
 		in.Image.PullPolicy = v12.PullIfNotPresent
 	}
 	return

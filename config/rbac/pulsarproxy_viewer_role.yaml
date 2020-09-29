@@ -4,17 +4,17 @@ kind: ClusterRole
 metadata:
   name: pulsarproxy-viewer-role
 rules:
-- apiGroups:
-  - pulsar.skulup.com
-  resources:
-  - pulsarproxies
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - pulsar.skulup.com
-  resources:
-  - pulsarproxies/status
-  verbs:
-  - get
+  - apiGroups:
+      - pulsar.skulup.com
+    resources:
+      - pulsarproxies
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - pulsar.skulup.com
+    resources:
+      - pulsarproxies/status
+    verbs:
+      - get

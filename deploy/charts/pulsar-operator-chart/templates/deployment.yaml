@@ -3,16 +3,16 @@ kind: Deployment
 metadata:
   name: {{ include "pulsar-operator-chart.fullname" . }}
   labels:
-    {{- include "pulsar-operator-chart.labels" . | nindent 4 }}
+  {{- include "pulsar-operator-chart.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "pulsar-operator-chart.selectorLabels" . | nindent 6 }}
+  {{- include "pulsar-operator-chart.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "pulsar-operator-chart.selectorLabels" . | nindent 8 }}
+    {{- include "pulsar-operator-chart.selectorLabels" . | nindent 8 }}
     spec:
       serviceAccountName: {{ .Values.serviceAccountName }}
       containers:
@@ -30,4 +30,4 @@ spec:
             {{- if .Values.namespacesToWatch }}
             - name: NAMESPACES_TO_WATCH
               value: {{ join "," .Values.namespacesToWatch }}
-            {{ end }}
+  {{ end }}

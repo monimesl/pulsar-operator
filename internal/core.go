@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package pkg
+package internal
 
 import (
 	"github.com/skulup/operator-pkg/k8s"
 	"github.com/skulup/operator-pkg/k8s/configmap"
+	"github.com/skulup/operator-pkg/types"
 	"github.com/skulup/operator-pkg/util"
 	v12 "k8s.io/api/core/v1"
 	"strconv"
@@ -63,7 +64,7 @@ var (
 // Pulsar below version 2.6.0 has a buggy `apply-config-from-env.py` - it fails to update
 // existing broker.conf configuration parameters by using the `PULSAR_PREFIX_` prefix environment variables.
 // https://github.com/apache/pulsar/blob/v2.5.2/docker/pulsar/scripts/apply-config-from-env.py
-func IsApplyConfigFromEnvScriptFaulty(img Image) bool {
+func IsApplyConfigFromEnvScriptFaulty(img types.Image) bool {
 	tag := img.Tag
 	if tag == "latest" {
 		return false
@@ -75,9 +76,9 @@ func IsApplyConfigFromEnvScriptFaulty(img Image) bool {
 }
 
 // NewPulsarConfigMap returns a new ConfigMap
-func NewPulsarConfigMap(pularImg Image, namespace, name string) *v12.ConfigMap {
+func NewPulsarConfigMap(img types.Image, namespace, name string) *v12.ConfigMap {
 	data := map[string]string{}
-	if IsApplyConfigFromEnvScriptFaulty(pularImg) {
+	if IsApplyConfigFromEnvScriptFaulty(img) {
 		data["apply-config-from-env.py"] = applyConfigFromEnvPythonScript
 	}
 	return configmap.New(namespace, name, data)

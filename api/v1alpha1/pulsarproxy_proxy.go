@@ -17,7 +17,7 @@
 package v1alpha1
 
 import (
-	"github.com/skulup/pulsar-operator/pkg"
+	"github.com/skulup/operator-pkg/types"
 	v12 "k8s.io/api/core/v1"
 )
 
@@ -29,7 +29,7 @@ type Proxy struct {
 	Configs string `json:"configs,omitempty"`
 
 	// Image defines the container image to use. It defaults to apachepulsar/pulsar:latest
-	Image pkg.Image `json:"image,omitempty"`
+	Image types.Image `json:"image,omitempty"`
 
 	// Labels defines the labels to attach to the broker deployment
 	Labels map[string]string `json:"labels,omitempty"`
@@ -38,7 +38,7 @@ type Proxy struct {
 	Annotations map[string]string `json:"annotations,omitempty"`
 
 	// PodConfig defines common configuration for the broker pods
-	PodConfig pkg.PodConfig `json:"pod,omitempty"`
+	PodConfig types.PodConfig `json:"pod,omitempty"`
 }
 
 // Generate the labels of the proxy pod
@@ -46,17 +46,14 @@ func (in Proxy) GeneratePodLabels() map[string]string {
 	return in.PodConfig.Labels
 }
 
-func (in *Proxy) setDefaults() (changed bool) {
+func (in *Proxy) setDefaults() {
 	if in.Image.Repository == "" {
-		changed = true
 		in.Image.Repository = defaultRepository
 	}
 	if in.Image.Tag == "" {
-		changed = true
 		in.Image.Tag = defaultTag
 	}
 	if in.Image.PullPolicy == "" {
-		changed = true
 		in.Image.PullPolicy = v12.PullIfNotPresent
 	}
 	return

@@ -50,18 +50,6 @@ type PulsarProxy struct {
 	Status PulsarProxyStatus `json:"status,omitempty"`
 }
 
-// SetSpecDefaults set the defaults properties of the proxy spec and returns
-// true if any property was set otherwise false
-func (in *PulsarProxy) SetSpecDefaults() bool {
-	return in.Spec.Proxy.setDefaults()
-}
-
-// SetStatusDefaults set the defaults properties of the proxy status and returns
-// true if any property was set otherwise false
-func (in *PulsarProxy) SetStatusDefaults() bool {
-	return false
-}
-
 // +kubebuilder:object:root=true
 
 // PulsarProxyList contains a list of PulsarProxy
@@ -73,4 +61,11 @@ type PulsarProxyList struct {
 
 func init() {
 	SchemeBuilder.Register(&PulsarProxy{}, &PulsarProxyList{})
+}
+
+func (in *PulsarProxy) setSpecDefaults() {
+	in.Spec.Proxy.setDefaults()
+}
+
+func (in *PulsarProxy) setStatusDefaults() {
 }
