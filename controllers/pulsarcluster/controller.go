@@ -43,6 +43,7 @@ type Reconciler struct {
 	reconciler.Context
 }
 
+// Configure configures the reconciler
 func (r *Reconciler) Configure(ctx reconciler.Context) error {
 	r.Context = ctx
 	return ctx.NewControllerBuilder().

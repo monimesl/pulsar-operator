@@ -26,7 +26,6 @@ import (
 // log is for logging in this package.
 var pulsarproxylog = logf.Log.WithName("pulsarproxy-resource")
 
-
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 
 // +kubebuilder:webhook:path=/mutate-pulsar-skulup-com-v1alpha1-pulsarproxy,mutating=true,failurePolicy=fail,groups=pulsar.skulup.com,resources=pulsarproxies,verbs=create;update,versions=v1alpha1,name=mpulsarproxy.kb.io

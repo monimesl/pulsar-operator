@@ -32,15 +32,15 @@ const OperatorName = "pulsar-operator"
 const Domain = "pulsar.skulup.com"
 
 const (
-	// The broker app
+	// Broker defines a pulsar broker
 	Broker = "pulsar-broker"
-	// The proxy app
+	// Proxy defines a pulsar proxy
 	Proxy = "pulsar-proxy"
-	// The manager app
+	// Manager defines a pulsar manager
 	Manager = "pulsar-manager"
 )
 
-// The label indicating the cluster a broker belongs to
+// LabelCluster defines the cluster a broker belongs to
 const LabelCluster = "pulsar.skulup.com/cluster"
 const annPrometheusScrape = "prometheus.io/scrape"
 const annPrometheusPort = "prometheus.io/port"
@@ -84,7 +84,7 @@ func NewPulsarConfigMap(img types.Image, namespace, name string) *v12.ConfigMap 
 	return configmap.New(namespace, name, data)
 }
 
-// NewPulsarConfigMap returns the default pulsar service ports
+// CreateServicePorts returns the default pulsar service ports
 func CreateServicePorts() []v12.ServicePort {
 	return []v12.ServicePort{
 		{

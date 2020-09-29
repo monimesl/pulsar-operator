@@ -27,11 +27,11 @@ import (
 type ClusterStage string
 
 const (
-	// The cluster has been created but not initialized
+	// ClusterStageInitializing - cluster has been created but not initialized
 	ClusterStageInitializing ClusterStage = "ClusterInitializing"
-	// The cluster is initialized and is being launched
+	// ClusterStageLaunching - cluster is initialized and is being launched but not running
 	ClusterStageLaunching = "ClusterLaunching"
-	// The cluster has ready and running
+	// ClusterStageRunning - cluster is launched and running
 	ClusterStageRunning = "ClusterRunning"
 )
 
@@ -52,7 +52,7 @@ type PulsarClusterStatus struct {
 	Stage ClusterStage `json:"stage,omitempty"`
 }
 
-// Check if the cluster has completed initialization
+// IsInitialized Check if the cluster has completed initialization
 func (in *PulsarCluster) IsInitialized() bool {
 	return in.Status.Stage != ClusterStageInitializing
 }
