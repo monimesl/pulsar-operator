@@ -711,7 +711,7 @@ spec:
                       additionalProperties:
                         type: string
                       description: Annotations defines the annotations to attach to
-                        the broker pod
+                        the pod
                       type: object
                     env:
                       description: List of environment variables to set in the container.
