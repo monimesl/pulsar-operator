@@ -22,7 +22,7 @@ import (
 	"github.com/skulup/operator-pkg/k8s/deployment"
 	"github.com/skulup/operator-pkg/reconciler"
 	"github.com/skulup/pulsar-operator/api/v1alpha1"
-	"github.com/skulup/pulsar-operator/internal"
+	"github.com/skulup/pulsar-operator/pkg"
 	v1 "k8s.io/api/apps/v1"
 	v12 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -65,7 +65,7 @@ func volumeName(manager *v1alpha1.PulsarManager) string {
 
 func createDeployment(manager *v1alpha1.PulsarManager) *v1.Deployment {
 	Replicas := int32(1)
-	labels := internal.GenerateLabels(internal.Manager, manager.Spec.GeneratePodLabels())
+	labels := pkg.GenerateLabels(pkg.Manager, manager.Spec.GeneratePodLabels())
 	return deployment.New(deploymentNamespace(manager), deploymentName(manager), manager.Spec.Labels,
 		v1.DeploymentSpec{
 			Replicas: &Replicas,
@@ -87,7 +87,7 @@ func createDeploymentPodTemplateSpec(manager *v1alpha1.PulsarManager, labels map
 			GenerateName: manager.GetName(), // leave it to k8s for name uniqueness
 			Namespace:    deploymentNamespace(manager),
 			Labels:       labels,
-			Annotations:  internal.GenerateAnnotations(manager.Spec.Annotations),
+			Annotations:  pkg.GenerateAnnotations(manager.Spec.Annotations),
 		},
 		Spec: v12.PodSpec{
 			Affinity:              &podCfg.Affinity,
@@ -134,12 +134,12 @@ func createDeploymentPodContainerPorts() []v12.ContainerPort {
 		{
 			Name:          "backend",
 			Protocol:      v12.ProtocolTCP,
-			ContainerPort: internal.ManagerBackendPort,
+			ContainerPort: pkg.ManagerBackendPort,
 		},
 		{
 			Name:          "frontend",
 			Protocol:      v12.ProtocolTCP,
-			ContainerPort: internal.ManagerFrontendPort,
+			ContainerPort: pkg.ManagerFrontendPort,
 		},
 	}
 }

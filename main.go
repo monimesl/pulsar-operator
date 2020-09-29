@@ -33,7 +33,7 @@ import (
 	"github.com/skulup/pulsar-operator/controllers/pulsarcluster"
 	"github.com/skulup/pulsar-operator/controllers/pulsarmanager"
 	"github.com/skulup/pulsar-operator/controllers/pulsarproxy"
-	"github.com/skulup/pulsar-operator/internal"
+	"github.com/skulup/pulsar-operator/pkg"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -48,7 +48,7 @@ func init() {
 }
 
 func main() {
-	config, options := configs.GetManagerParams(scheme, internal.OperatorName, internal.Domain)
+	config, options := configs.GetManagerParams(scheme, pkg.OperatorName, pkg.Domain)
 	mgr, err := manager.New(config, options)
 	if err != nil {
 		log.Fatalf("unable to start manager: %s", err)

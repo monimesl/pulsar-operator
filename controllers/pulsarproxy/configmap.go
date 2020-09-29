@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"github.com/skulup/operator-pkg/reconciler"
 	"github.com/skulup/pulsar-operator/api/v1alpha1"
-	"github.com/skulup/pulsar-operator/internal"
+	"github.com/skulup/pulsar-operator/pkg"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
@@ -37,7 +37,7 @@ func reconcileConfigMap(ctx reconciler.Context, proxy *v1alpha1.PulsarProxy) err
 
 		},
 		func() (err error) {
-			cm = internal.NewPulsarConfigMap(proxy.Spec.Proxy.Image,
+			cm = pkg.NewPulsarConfigMap(proxy.Spec.Proxy.Image,
 				configMapNamespace(proxy), configMapName(proxy))
 			if err = ctx.SetOwnershipReference(proxy, cm); err == nil {
 				if err = ctx.Client().Create(context.TODO(), cm); err == nil {

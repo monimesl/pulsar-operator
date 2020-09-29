@@ -23,7 +23,7 @@ import (
 	"github.com/skulup/operator-pkg/k8s/deployment"
 	"github.com/skulup/operator-pkg/reconciler"
 	"github.com/skulup/pulsar-operator/api/v1alpha1"
-	"github.com/skulup/pulsar-operator/internal"
+	"github.com/skulup/pulsar-operator/pkg"
 	"gopkg.in/yaml.v2"
 	v1 "k8s.io/api/apps/v1"
 	v12 "k8s.io/api/core/v1"
@@ -82,7 +82,7 @@ func deploymentName(proxy *v1alpha1.PulsarProxy) string {
 }
 
 func createDeployment(proxy *v1alpha1.PulsarProxy) *v1.Deployment {
-	labels := internal.GenerateLabels(internal.Proxy, proxy.Spec.Proxy.GeneratePodLabels())
+	labels := pkg.GenerateLabels(pkg.Proxy, proxy.Spec.Proxy.GeneratePodLabels())
 	return deployment.New(deploymentNamespace(proxy), deploymentName(proxy), proxy.Spec.Proxy.Labels,
 		v1.DeploymentSpec{
 			Replicas: &proxy.Spec.Count,
@@ -101,7 +101,7 @@ func createDeploymentPodTemplateSpec(proxy *v1alpha1.PulsarProxy, labels map[str
 		activeDeadlineSeconds = &podCfg.ActiveDeadlineSeconds
 	}
 	volumes := make([]v12.Volume, 0)
-	if internal.IsApplyConfigFromEnvScriptFaulty(proxy.Spec.Proxy.Image) {
+	if pkg.IsApplyConfigFromEnvScriptFaulty(proxy.Spec.Proxy.Image) {
 		volumes = append(volumes, v12.Volume{
 			Name: configEnvPyScriptVolume,
 			VolumeSource: v12.VolumeSource{
@@ -119,7 +119,7 @@ func createDeploymentPodTemplateSpec(proxy *v1alpha1.PulsarProxy, labels map[str
 			GenerateName: proxy.GetName(), // leave it to k8s for name uniqueness
 			Namespace:    deploymentNamespace(proxy),
 			Labels:       labels,
-			Annotations:  internal.GenerateAnnotations(proxy.Spec.Proxy.Annotations),
+			Annotations:  pkg.GenerateAnnotations(proxy.Spec.Proxy.Annotations),
 		},
 		Spec: v12.PodSpec{
 			Affinity:              &podCfg.Affinity,
@@ -136,7 +136,7 @@ func createDeploymentPodTemplateSpec(proxy *v1alpha1.PulsarProxy, labels map[str
 func createDeploymentContainer(proxy *v1alpha1.PulsarProxy) v12.Container {
 	volumeMounts := make([]v12.VolumeMount, 0)
 	applyConfigFromEnvScriptDirectory := "bin"
-	if internal.IsApplyConfigFromEnvScriptFaulty(proxy.Spec.Proxy.Image) {
+	if pkg.IsApplyConfigFromEnvScriptFaulty(proxy.Spec.Proxy.Image) {
 		applyConfigFromEnvScriptDirectory = "/config"
 		volumeMounts = append(volumeMounts, v12.VolumeMount{
 			Name:      configEnvPyScriptVolume,
@@ -170,22 +170,22 @@ func createDeploymentContainerPorts(_ *v1alpha1.PulsarProxy) []v12.ContainerPort
 		{
 			Name:          "pulsar-tcp",
 			Protocol:      v12.ProtocolTCP,
-			ContainerPort: internal.ServicePort,
+			ContainerPort: pkg.ServicePort,
 		},
 		{
 			Name:          "pulsar-tls",
 			Protocol:      v12.ProtocolTCP,
-			ContainerPort: internal.ServicePortTLS,
+			ContainerPort: pkg.ServicePortTLS,
 		},
 		{
 			Name:          "pulsar-http",
 			Protocol:      v12.ProtocolTCP,
-			ContainerPort: internal.WebServicePort,
+			ContainerPort: pkg.WebServicePort,
 		},
 		{
 			Name:          "pulsar-https",
 			Protocol:      v12.ProtocolTCP,
-			ContainerPort: internal.WebServicePortTLS,
+			ContainerPort: pkg.WebServicePortTLS,
 		},
 	}
 }

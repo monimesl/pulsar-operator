@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package internal
+package pkg
 
 import (
 	"github.com/skulup/operator-pkg/k8s"

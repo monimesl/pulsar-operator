@@ -23,7 +23,7 @@ import (
 	"github.com/skulup/operator-pkg/k8s/job"
 	"github.com/skulup/operator-pkg/reconciler"
 	"github.com/skulup/pulsar-operator/api/v1alpha1"
-	"github.com/skulup/pulsar-operator/internal"
+	"github.com/skulup/pulsar-operator/pkg"
 	v1 "k8s.io/api/batch/v1"
 	coreV1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -77,7 +77,7 @@ func initMetadata(ctx reconciler.Context, cluster *v1alpha1.PulsarCluster) error
 }
 
 func createJob(c *v1alpha1.PulsarCluster) *v1.Job {
-	labels := internal.GenerateLabels("", nil)
+	labels := pkg.GenerateLabels("", nil)
 	return job.New(jobNamespace(c), jobName(c), labels,
 		v1.JobSpec{
 			Template: coreV1.PodTemplateSpec{
@@ -115,10 +115,10 @@ func createJobPodContainerArguments(c *v1alpha1.PulsarCluster) []string {
 			fmt.Sprintf("--cluster %s ", c.GetName()) +
 			fmt.Sprintf("--zookeeper %s ", c.Spec.Broker.ZookeeperServers) +
 			fmt.Sprintf("--configuration-store %s ", c.Spec.Broker.ConfigurationStoreServers) +
-			fmt.Sprintf("--web-service-url %s:%d ", brokerFQDNService, internal.WebServicePort) +
-			fmt.Sprintf("--web-service-url-tls %s:%d ", brokerFQDNService, internal.WebServicePortTLS) +
-			fmt.Sprintf("--broker-service-url %s:%d ", brokerFQDNService, internal.ServicePort) +
-			fmt.Sprintf("--broker-service-url-tls %s:%d ", brokerFQDNService, internal.ServicePortTLS),
+			fmt.Sprintf("--web-service-url %s:%d ", brokerFQDNService, pkg.WebServicePort) +
+			fmt.Sprintf("--web-service-url-tls %s:%d ", brokerFQDNService, pkg.WebServicePortTLS) +
+			fmt.Sprintf("--broker-service-url %s:%d ", brokerFQDNService, pkg.ServicePort) +
+			fmt.Sprintf("--broker-service-url-tls %s:%d ", brokerFQDNService, pkg.ServicePortTLS),
 	}
 }
 
