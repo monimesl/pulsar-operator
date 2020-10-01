@@ -1,7 +1,7 @@
 domain: skulup.com
 layout: go.kubebuilder.io/v2
 projectName: pulsar-operator
-repo: github.com/skulup/pulsar-operator
+repo: github.com/alphashaw/pulsar-operator
 resources:
 - group: pulsar
   kind: PulsarCluster

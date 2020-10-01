@@ -1,9 +1,9 @@
-module github.com/skulup/pulsar-operator
+module github.com/alphashaw/pulsar-operator
 
-go 1.14
+go 1.15
 
 require (
-	github.com/skulup/operator-pkg v0.1.8
+	github.com/alphashaw/operator-pkg v0.2.0
 	gopkg.in/yaml.v2 v2.3.0
 	k8s.io/api v0.18.6
 	k8s.io/apimachinery v0.18.6

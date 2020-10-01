@@ -19,9 +19,9 @@ package pulsarproxy
 import (
 	"context"
 	"fmt"
-	"github.com/skulup/operator-pkg/reconciler"
-	"github.com/skulup/pulsar-operator/api/v1alpha1"
-	"github.com/skulup/pulsar-operator/internal"
+	"github.com/alphashaw/operator-pkg/reconciler"
+	"github.com/alphashaw/pulsar-operator/api/v1alpha1"
+	"github.com/alphashaw/pulsar-operator/internal"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 )

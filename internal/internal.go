@@ -16,10 +16,10 @@
 package internal
 
 import (
-	"github.com/skulup/operator-pkg/k8s"
-	"github.com/skulup/operator-pkg/k8s/configmap"
-	"github.com/skulup/operator-pkg/types"
-	"github.com/skulup/operator-pkg/util"
+	"github.com/alphashaw/operator-pkg/k8s"
+	"github.com/alphashaw/operator-pkg/k8s/configmap"
+	"github.com/alphashaw/operator-pkg/types"
+	"github.com/alphashaw/operator-pkg/util"
 	v12 "k8s.io/api/core/v1"
 	"strconv"
 	"strings"

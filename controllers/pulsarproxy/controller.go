@@ -17,8 +17,8 @@
 package pulsarproxy
 
 import (
-	"github.com/skulup/operator-pkg/reconciler"
-	"github.com/skulup/pulsar-operator/api/v1alpha1"
+	"github.com/alphashaw/operator-pkg/reconciler"
+	"github.com/alphashaw/pulsar-operator/api/v1alpha1"
 	appsV1 "k8s.io/api/apps/v1"
 	coreV1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"

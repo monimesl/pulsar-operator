@@ -19,9 +19,9 @@ package main
 import (
 	"log"
 
-	"github.com/skulup/operator-pkg/configs"
-	"github.com/skulup/operator-pkg/reconcilers"
-	"github.com/skulup/operator-pkg/webhooks"
+	"github.com/alphashaw/operator-pkg/configs"
+	"github.com/alphashaw/operator-pkg/reconcilers"
+	"github.com/alphashaw/operator-pkg/webhooks"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -29,11 +29,11 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	pulsarv1alpha1 "github.com/skulup/pulsar-operator/api/v1alpha1"
-	"github.com/skulup/pulsar-operator/controllers/pulsarcluster"
-	"github.com/skulup/pulsar-operator/controllers/pulsarmanager"
-	"github.com/skulup/pulsar-operator/controllers/pulsarproxy"
-	"github.com/skulup/pulsar-operator/internal"
+	pulsarv1alpha1 "github.com/alphashaw/pulsar-operator/api/v1alpha1"
+	"github.com/alphashaw/pulsar-operator/controllers/pulsarcluster"
+	"github.com/alphashaw/pulsar-operator/controllers/pulsarmanager"
+	"github.com/alphashaw/pulsar-operator/controllers/pulsarproxy"
+	"github.com/alphashaw/pulsar-operator/internal"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -51,7 +51,7 @@ func main() {
 	config, options := configs.GetManagerParams(scheme, internal.OperatorName, internal.Domain)
 	mgr, err := manager.New(config, options)
 	if err != nil {
-		log.Fatalf("unable to start manager: %s", err)
+		log.Fatalf("manager create error: %s", err)
 	}
 	if err = webhooks.Configure(mgr,
 		&pulsarv1alpha1.PulsarProxy{},
@@ -63,7 +63,7 @@ func main() {
 		&pulsarproxy.Reconciler{},
 		&pulsarcluster.Reconciler{},
 		&pulsarmanager.Reconciler{}); err != nil {
-		log.Fatalf("unable to start manager: %s", err)
+		log.Fatalf("reconciler config error: %s", err)
 	}
 	if err = mgr.Start(ctrl.SetupSignalHandler()); err != nil {
 		log.Fatalf("operator start error: %s", err)
