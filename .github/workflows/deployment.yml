@@ -1,11 +1,11 @@
-name: Docker Automation
+name: Deployment Automation
 on:
   push:
     tags:
       - 'v*.*.*'
 jobs:
   build:
-    name: Build And Deploy
+    name: Deployment
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.3.2
