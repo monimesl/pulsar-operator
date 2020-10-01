@@ -16,10 +16,10 @@
 package internal
 
 import (
-	"github.com/alphashaw/operator-pkg/k8s"
-	"github.com/alphashaw/operator-pkg/k8s/configmap"
-	"github.com/alphashaw/operator-pkg/types"
-	"github.com/alphashaw/operator-pkg/util"
+	"github.com/wireltd/operator-pkg/k8s"
+	"github.com/wireltd/operator-pkg/k8s/configmap"
+	"github.com/wireltd/operator-pkg/types"
+	"github.com/wireltd/operator-pkg/util"
 	v12 "k8s.io/api/core/v1"
 	"strconv"
 	"strings"

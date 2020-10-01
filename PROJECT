@@ -1,7 +1,7 @@
 domain: wirelimited.com
 layout: go.kubebuilder.io/v2
 projectName: pulsar-operator
-repo: github.com/alphashaw/pulsar-operator
+repo: github.com/wireltd/pulsar-operator
 resources:
 - group: pulsar
   kind: PulsarCluster

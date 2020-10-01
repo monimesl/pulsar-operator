@@ -10,7 +10,7 @@ webhooks:
       service:
         name: webhook-service
         namespace: system
-        path: /mutate-pulsar-skulup-com-v1alpha1-pulsarcluster
+        path: /mutate-pulsar-wirelimited-com-v1alpha1-pulsarcluster
     failurePolicy: Fail
     name: mpulsarcluster.kb.io
     rules:
@@ -28,7 +28,7 @@ webhooks:
       service:
         name: webhook-service
         namespace: system
-        path: /mutate-pulsar-skulup-com-v1alpha1-pulsarmanager
+        path: /mutate-pulsar-wirelimited-com-v1alpha1-pulsarmanager
     failurePolicy: Fail
     name: mpulsarmanager.kb.io
     rules:
@@ -46,7 +46,7 @@ webhooks:
       service:
         name: webhook-service
         namespace: system
-        path: /mutate-pulsar-skulup-com-v1alpha1-pulsarproxy
+        path: /mutate-pulsar-wirelimited-com-v1alpha1-pulsarproxy
     failurePolicy: Fail
     name: mpulsarproxy.kb.io
     rules:
@@ -72,7 +72,7 @@ webhooks:
       service:
         name: webhook-service
         namespace: system
-        path: /validate-pulsar-skulup-com-v1alpha1-pulsarcluster
+        path: /validate-pulsar-wirelimited-com-v1alpha1-pulsarcluster
     failurePolicy: Fail
     name: vpulsarcluster.kb.io
     rules:
@@ -90,7 +90,7 @@ webhooks:
       service:
         name: webhook-service
         namespace: system
-        path: /validate-pulsar-skulup-com-v1alpha1-pulsarmanager
+        path: /validate-pulsar-wirelimited-com-v1alpha1-pulsarmanager
     failurePolicy: Fail
     name: vpulsarmanager.kb.io
     rules:
@@ -108,7 +108,7 @@ webhooks:
       service:
         name: webhook-service
         namespace: system
-        path: /validate-pulsar-skulup-com-v1alpha1-pulsarproxy
+        path: /validate-pulsar-wirelimited-com-v1alpha1-pulsarproxy
     failurePolicy: Fail
     name: vpulsarproxy.kb.io
     rules:

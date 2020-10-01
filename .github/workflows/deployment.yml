@@ -46,7 +46,7 @@ jobs:
       - name: Build Helm Chart
         run: |
           TAG=${{ steps.prepare.outputs.version }} && VERSION="${TAG//v}"
-          git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/wiretld/charts.git output
+          git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/wireltd/charts.git output
           sed -i "s|version: 1.0.0|version: $VERSION|; s|appVersion: 1.0.0|appVersion: $VERSION|" deploy/charts/pulsar-operator-chart/Chart.yaml
           helm package deploy/charts/pulsar-operator-chart/ -d output
           helm repo index --url https://wireltd.github.io/charts/ output --merge index.yaml

@@ -17,7 +17,7 @@
 package v1alpha1
 
 import (
-	"github.com/alphashaw/operator-pkg/types"
+	"github.com/wireltd/operator-pkg/types"
 	v12 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )

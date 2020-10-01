@@ -17,23 +17,22 @@ limitations under the License.
 package main
 
 import (
-	"log"
-
-	"github.com/alphashaw/operator-pkg/configs"
-	"github.com/alphashaw/operator-pkg/reconcilers"
-	"github.com/alphashaw/operator-pkg/webhooks"
+	"github.com/wireltd/operator-pkg/configs"
+	"github.com/wireltd/operator-pkg/reconcilers"
+	"github.com/wireltd/operator-pkg/webhooks"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
+	"log"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
-	pulsarv1alpha1 "github.com/alphashaw/pulsar-operator/api/v1alpha1"
-	"github.com/alphashaw/pulsar-operator/controllers/pulsarcluster"
-	"github.com/alphashaw/pulsar-operator/controllers/pulsarmanager"
-	"github.com/alphashaw/pulsar-operator/controllers/pulsarproxy"
-	"github.com/alphashaw/pulsar-operator/internal"
+	pulsarv1alpha1 "github.com/wireltd/pulsar-operator/api/v1alpha1"
+	"github.com/wireltd/pulsar-operator/controllers/pulsarcluster"
+	"github.com/wireltd/pulsar-operator/controllers/pulsarmanager"
+	"github.com/wireltd/pulsar-operator/controllers/pulsarproxy"
+	"github.com/wireltd/pulsar-operator/internal"
 	// +kubebuilder:scaffold:imports
 )
 

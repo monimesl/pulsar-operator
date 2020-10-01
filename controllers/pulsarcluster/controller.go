@@ -17,8 +17,8 @@
 package pulsarcluster
 
 import (
-	"github.com/alphashaw/operator-pkg/reconciler"
-	"github.com/alphashaw/pulsar-operator/api/v1alpha1"
+	"github.com/wireltd/operator-pkg/reconciler"
+	"github.com/wireltd/pulsar-operator/api/v1alpha1"
 	v1 "k8s.io/api/apps/v1"
 	v13 "k8s.io/api/batch/v1"
 	v12 "k8s.io/api/core/v1"

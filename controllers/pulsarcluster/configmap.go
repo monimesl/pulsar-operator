@@ -19,9 +19,9 @@ package pulsarcluster
 import (
 	"context"
 	"fmt"
-	"github.com/alphashaw/operator-pkg/reconciler"
-	"github.com/alphashaw/pulsar-operator/api/v1alpha1"
-	"github.com/alphashaw/pulsar-operator/internal"
+	"github.com/wireltd/operator-pkg/reconciler"
+	"github.com/wireltd/pulsar-operator/api/v1alpha1"
+	"github.com/wireltd/pulsar-operator/internal"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 )

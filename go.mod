@@ -1,9 +1,9 @@
-module github.com/alphashaw/pulsar-operator
+module github.com/wireltd/pulsar-operator
 
 go 1.15
 
 require (
-	github.com/alphashaw/operator-pkg v0.2.0
+	github.com/wireltd/operator-pkg v0.3.0
 	gopkg.in/yaml.v2 v2.3.0
 	k8s.io/api v0.18.6
 	k8s.io/apimachinery v0.18.6
