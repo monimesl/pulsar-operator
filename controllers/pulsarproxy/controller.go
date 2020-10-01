@@ -17,8 +17,8 @@
 package pulsarproxy
 
 import (
-	"github.com/wireltd/operator-pkg/reconciler"
-	"github.com/wireltd/pulsar-operator/api/v1alpha1"
+	"github.com/skulup/operator-helper/reconciler"
+	"github.com/skulup/pulsar-operator/api/v1alpha1"
 	appsV1 "k8s.io/api/apps/v1"
 	coreV1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -50,8 +50,8 @@ func (r *Reconciler) Configure(ctx reconciler.Context) error {
 		Complete(r)
 }
 
-// +kubebuilder:rbac:groups=pulsar.wirelimited.com,resources=pulsarproxies,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=pulsar.wirelimited.com,resources=pulsarproxies/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=pulsar.skulup.com,resources=pulsarproxies,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=pulsar.skulup.com,resources=pulsarproxies/status,verbs=get;update;patch
 
 // Reconciler performs a full reconciliation for the object referred to by the Request.
 func (r *Reconciler) Reconcile(request reconcile.Request) (reconcile.Result, error) {

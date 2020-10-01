@@ -19,10 +19,10 @@ package pulsarmanager
 import (
 	"context"
 	"fmt"
-	"github.com/wireltd/operator-pkg/k8s/service"
-	"github.com/wireltd/operator-pkg/reconciler"
-	"github.com/wireltd/pulsar-operator/api/v1alpha1"
-	"github.com/wireltd/pulsar-operator/internal"
+	"github.com/skulup/operator-helper/k8s/service"
+	"github.com/skulup/operator-helper/reconciler"
+	"github.com/skulup/pulsar-operator/api/v1alpha1"
+	"github.com/skulup/pulsar-operator/internal"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 )

@@ -6,7 +6,7 @@ metadata:
   name: manager-role
 rules:
   - apiGroups:
-      - pulsar.wirelimited.com
+      - pulsar.skulup.com
     resources:
       - pulsarclusters
     verbs:
@@ -18,7 +18,7 @@ rules:
       - update
       - watch
   - apiGroups:
-      - pulsar.wirelimited.com
+      - pulsar.skulup.com
     resources:
       - pulsarclusters/status
     verbs:
@@ -26,7 +26,7 @@ rules:
       - patch
       - update
   - apiGroups:
-      - pulsar.wirelimited.com
+      - pulsar.skulup.com
     resources:
       - pulsarmanagers
     verbs:
@@ -38,7 +38,7 @@ rules:
       - update
       - watch
   - apiGroups:
-      - pulsar.wirelimited.com
+      - pulsar.skulup.com
     resources:
       - pulsarmanagers/status
     verbs:
@@ -46,7 +46,7 @@ rules:
       - patch
       - update
   - apiGroups:
-      - pulsar.wirelimited.com
+      - pulsar.skulup.com
     resources:
       - pulsarproxies
     verbs:
@@ -58,7 +58,7 @@ rules:
       - update
       - watch
   - apiGroups:
-      - pulsar.wirelimited.com
+      - pulsar.skulup.com
     resources:
       - pulsarproxies/status
     verbs:

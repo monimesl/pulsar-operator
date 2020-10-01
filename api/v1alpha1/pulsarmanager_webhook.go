@@ -17,7 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"github.com/wireltd/operator-pkg/webhooks"
+	"github.com/skulup/operator-helper/webhooks"
 	"k8s.io/apimachinery/pkg/runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
@@ -28,7 +28,7 @@ var pulsarmanagerlog = logf.Log.WithName("pulsarmanager-resource")
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 
-// +kubebuilder:webhook:path=/mutate-pulsar-wirelimited-com-v1alpha1-pulsarmanager,mutating=true,failurePolicy=fail,groups=pulsar.wirelimited.com,resources=pulsarmanagers,verbs=create;update,versions=v1alpha1,name=mpulsarmanager.kb.io
+// +kubebuilder:webhook:path=/mutate-pulsar-skulup-com-v1alpha1-pulsarmanager,mutating=true,failurePolicy=fail,groups=pulsar.skulup.com,resources=pulsarmanagers,verbs=create;update,versions=v1alpha1,name=mpulsarmanager.kb.io
 
 var _ webhook.Defaulter = &PulsarManager{}
 
@@ -39,7 +39,7 @@ func (in *PulsarManager) Default() {
 	in.setStatusDefaults()
 }
 
-// +kubebuilder:webhook:verbs=create;update,path=/validate-pulsar-wirelimited-com-v1alpha1-pulsarmanager,mutating=false,failurePolicy=fail,groups=pulsar.wirelimited.com,resources=pulsarmanagers,versions=v1alpha1,name=vpulsarmanager.kb.io
+// +kubebuilder:webhook:verbs=create;update,path=/validate-pulsar-skulup-com-v1alpha1-pulsarmanager,mutating=false,failurePolicy=fail,groups=pulsar.skulup.com,resources=pulsarmanagers,versions=v1alpha1,name=vpulsarmanager.kb.io
 
 var _ webhook.Validator = &PulsarManager{}
 

@@ -5,7 +5,7 @@ metadata:
   name: pulsarcluster-editor-role
 rules:
   - apiGroups:
-      - pulsar.wirelimited.com
+      - pulsar.skulup.com
     resources:
       - pulsarclusters
     verbs:
@@ -17,7 +17,7 @@ rules:
       - update
       - watch
   - apiGroups:
-      - pulsar.wirelimited.com
+      - pulsar.skulup.com
     resources:
       - pulsarclusters/status
     verbs:

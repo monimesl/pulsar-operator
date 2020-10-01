@@ -17,7 +17,7 @@
 package v1alpha1
 
 import (
-	"github.com/wireltd/operator-pkg/types"
+	"github.com/skulup/operator-helper/types"
 	v12 "k8s.io/api/core/v1"
 )
 

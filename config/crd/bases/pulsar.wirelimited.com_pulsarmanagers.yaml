@@ -5,9 +5,9 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.3.0
   creationTimestamp: null
-  name: pulsarmanagers.pulsar.wirelimited.com
+  name: pulsarmanagers.pulsar.skulup.com
 spec:
-  group: pulsar.wirelimited.com
+  group: pulsar.skulup.com
   names:
     kind: PulsarManager
     listKind: PulsarManagerList

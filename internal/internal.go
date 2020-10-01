@@ -16,10 +16,10 @@
 package internal
 
 import (
-	"github.com/wireltd/operator-pkg/k8s"
-	"github.com/wireltd/operator-pkg/k8s/configmap"
-	"github.com/wireltd/operator-pkg/types"
-	"github.com/wireltd/operator-pkg/util"
+	"github.com/skulup/operator-helper/k8s"
+	"github.com/skulup/operator-helper/k8s/configmap"
+	"github.com/skulup/operator-helper/types"
+	"github.com/skulup/operator-helper/util"
 	v12 "k8s.io/api/core/v1"
 	"strconv"
 	"strings"
@@ -29,7 +29,7 @@ import (
 const OperatorName = "pulsar-operator"
 
 // Domain defines the domain of the operator
-const Domain = "pulsar.wirelimited.com"
+const Domain = "pulsar.skulup.com"
 
 const (
 	// Broker defines a pulsar broker
@@ -41,7 +41,7 @@ const (
 )
 
 // LabelCluster defines the cluster a broker belongs to
-const LabelCluster = "pulsar.wirelimited.com/cluster"
+const LabelCluster = "pulsar.skulup.com/cluster"
 const annPrometheusScrape = "prometheus.io/scrape"
 const annPrometheusPort = "prometheus.io/port"
 

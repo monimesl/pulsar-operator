@@ -1,4 +1,3 @@
-
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -6,9 +5,9 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.3.0
   creationTimestamp: null
-  name: pulsarclusters.pulsar.wirelimited.com
+  name: pulsarclusters.pulsar.skulup.com
 spec:
-  group: pulsar.wirelimited.com
+  group: pulsar.skulup.com
   names:
     kind: PulsarCluster
     listKind: PulsarClusterList
@@ -16,7 +15,7 @@ spec:
     singular: pulsarcluster
   scope: Namespaced
   subresources:
-    status: {}
+    status: { }
   validation:
     openAPIV3Schema:
       description: PulsarCluster is the Schema for the pulsarclusters API
@@ -145,8 +144,8 @@ spec:
                                                 type: string
                                               type: array
                                           required:
-                                          - key
-                                          - operator
+                                            - key
+                                            - operator
                                           type: object
                                         type: array
                                       matchFields:
@@ -183,8 +182,8 @@ spec:
                                                 type: string
                                               type: array
                                           required:
-                                          - key
-                                          - operator
+                                            - key
+                                            - operator
                                           type: object
                                         type: array
                                     type: object
@@ -195,8 +194,8 @@ spec:
                                     format: int32
                                     type: integer
                                 required:
-                                - preference
-                                - weight
+                                  - preference
+                                  - weight
                                 type: object
                               type: array
                             requiredDuringSchedulingIgnoredDuringExecution:
@@ -251,8 +250,8 @@ spec:
                                                 type: string
                                               type: array
                                           required:
-                                          - key
-                                          - operator
+                                            - key
+                                            - operator
                                           type: object
                                         type: array
                                       matchFields:
@@ -289,14 +288,14 @@ spec:
                                                 type: string
                                               type: array
                                           required:
-                                          - key
-                                          - operator
+                                            - key
+                                            - operator
                                           type: object
                                         type: array
                                     type: object
                                   type: array
                               required:
-                              - nodeSelectorTerms
+                                - nodeSelectorTerms
                               type: object
                           type: object
                         podAffinity:
@@ -363,8 +362,8 @@ spec:
                                                     type: string
                                                   type: array
                                               required:
-                                              - key
-                                              - operator
+                                                - key
+                                                - operator
                                               type: object
                                             type: array
                                           matchLabels:
@@ -397,7 +396,7 @@ spec:
                                           allowed.
                                         type: string
                                     required:
-                                    - topologyKey
+                                      - topologyKey
                                     type: object
                                   weight:
                                     description: weight associated with matching the
@@ -406,8 +405,8 @@ spec:
                                     format: int32
                                     type: integer
                                 required:
-                                - podAffinityTerm
-                                - weight
+                                  - podAffinityTerm
+                                  - weight
                                 type: object
                               type: array
                             requiredDuringSchedulingIgnoredDuringExecution:
@@ -466,8 +465,8 @@ spec:
                                                 type: string
                                               type: array
                                           required:
-                                          - key
-                                          - operator
+                                            - key
+                                            - operator
                                           type: object
                                         type: array
                                       matchLabels:
@@ -499,7 +498,7 @@ spec:
                                       is not allowed.
                                     type: string
                                 required:
-                                - topologyKey
+                                  - topologyKey
                                 type: object
                               type: array
                           type: object
@@ -567,8 +566,8 @@ spec:
                                                     type: string
                                                   type: array
                                               required:
-                                              - key
-                                              - operator
+                                                - key
+                                                - operator
                                               type: object
                                             type: array
                                           matchLabels:
@@ -601,7 +600,7 @@ spec:
                                           allowed.
                                         type: string
                                     required:
-                                    - topologyKey
+                                      - topologyKey
                                     type: object
                                   weight:
                                     description: weight associated with matching the
@@ -610,8 +609,8 @@ spec:
                                     format: int32
                                     type: integer
                                 required:
-                                - podAffinityTerm
-                                - weight
+                                  - podAffinityTerm
+                                  - weight
                                 type: object
                               type: array
                             requiredDuringSchedulingIgnoredDuringExecution:
@@ -670,8 +669,8 @@ spec:
                                                 type: string
                                               type: array
                                           required:
-                                          - key
-                                          - operator
+                                            - key
+                                            - operator
                                           type: object
                                         type: array
                                       matchLabels:
@@ -703,7 +702,7 @@ spec:
                                       is not allowed.
                                     type: string
                                 required:
-                                - topologyKey
+                                  - topologyKey
                                 type: object
                               type: array
                           type: object
@@ -756,7 +755,7 @@ spec:
                                       its key must be defined
                                     type: boolean
                                 required:
-                                - key
+                                  - key
                                 type: object
                               fieldRef:
                                 description: 'Selects a field of the pod: supports
@@ -773,7 +772,7 @@ spec:
                                       specified API version.
                                     type: string
                                 required:
-                                - fieldPath
+                                  - fieldPath
                                 type: object
                               resourceFieldRef:
                                 description: 'Selects a resource of the container:
@@ -788,8 +787,8 @@ spec:
                                     type: string
                                   divisor:
                                     anyOf:
-                                    - type: integer
-                                    - type: string
+                                      - type: integer
+                                      - type: string
                                     description: Specifies the output format of the
                                       exposed resources, defaults to "1"
                                     pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
@@ -798,7 +797,7 @@ spec:
                                     description: 'Required: resource to select'
                                     type: string
                                 required:
-                                - resource
+                                  - resource
                                 type: object
                               secretKeyRef:
                                 description: Selects a key of a secret in the pod's
@@ -819,11 +818,11 @@ spec:
                                       key must be defined
                                     type: boolean
                                 required:
-                                - key
+                                  - key
                                 type: object
                             type: object
                         required:
-                        - name
+                          - name
                         type: object
                       type: array
                     envFrom:
@@ -887,8 +886,8 @@ spec:
                         limits:
                           additionalProperties:
                             anyOf:
-                            - type: integer
-                            - type: string
+                              - type: integer
+                              - type: string
                             pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                             x-kubernetes-int-or-string: true
                           description: 'Limits describes the maximum amount of compute
@@ -897,8 +896,8 @@ spec:
                         requests:
                           additionalProperties:
                             anyOf:
-                            - type: integer
-                            - type: string
+                              - type: integer
+                              - type: string
                             pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
                             x-kubernetes-int-or-string: true
                           description: 'Requests describes the minimum amount of compute
@@ -1014,8 +1013,8 @@ spec:
                                 description: Value of a property to set
                                 type: string
                             required:
-                            - name
-                            - value
+                              - name
+                              - value
                             type: object
                           type: array
                         windowsOptions:
@@ -1079,8 +1078,8 @@ spec:
                               type: string
                             type: array
                         required:
-                        - key
-                        - operator
+                          - key
+                          - operator
                         type: object
                       type: array
                     matchLabels:
@@ -1114,12 +1113,12 @@ spec:
       type: object
   version: v1alpha1
   versions:
-  - name: v1alpha1
-    served: true
-    storage: true
+    - name: v1alpha1
+      served: true
+      storage: true
 status:
   acceptedNames:
     kind: ""
     plural: ""
-  conditions: []
-  storedVersions: []
+  conditions: [ ]
+  storedVersions: [ ]

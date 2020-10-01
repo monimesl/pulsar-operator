@@ -17,7 +17,7 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"github.com/wireltd/operator-pkg/webhooks"
+	"github.com/skulup/operator-helper/webhooks"
 	"k8s.io/apimachinery/pkg/runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
@@ -28,7 +28,7 @@ var pulsarproxylog = logf.Log.WithName("pulsarproxy-resource")
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 
-// +kubebuilder:webhook:path=/mutate-pulsar-wirelimited-com-v1alpha1-pulsarproxy,mutating=true,failurePolicy=fail,groups=pulsar.wirelimited.com,resources=pulsarproxies,verbs=create;update,versions=v1alpha1,name=mpulsarproxy.kb.io
+// +kubebuilder:webhook:path=/mutate-pulsar-skulup-com-v1alpha1-pulsarproxy,mutating=true,failurePolicy=fail,groups=pulsar.skulup.com,resources=pulsarproxies,verbs=create;update,versions=v1alpha1,name=mpulsarproxy.kb.io
 
 var _ webhook.Defaulter = &PulsarProxy{}
 
@@ -39,7 +39,7 @@ func (in *PulsarProxy) Default() {
 	in.setStatusDefaults()
 }
 
-// +kubebuilder:webhook:verbs=create;update,path=/validate-pulsar-wirelimited-com-v1alpha1-pulsarproxy,mutating=false,failurePolicy=fail,groups=pulsar.wirelimited.com,resources=pulsarproxies,versions=v1alpha1,name=vpulsarproxy.kb.io
+// +kubebuilder:webhook:verbs=create;update,path=/validate-pulsar-skulup-com-v1alpha1-pulsarproxy,mutating=false,failurePolicy=fail,groups=pulsar.skulup.com,resources=pulsarproxies,versions=v1alpha1,name=vpulsarproxy.kb.io
 
 var _ webhook.Validator = &PulsarProxy{}
 

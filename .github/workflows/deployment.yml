@@ -19,7 +19,7 @@ jobs:
       - name: Prepare Docker Variables
         id: prepare
         run: |
-          DOCKER_IMAGE=wireltd/pulsar-operator
+          DOCKER_IMAGE=skulup/pulsar-operator
           VERSION=${GITHUB_REF#refs/tags/}
           TAGS="${DOCKER_IMAGE}:${VERSION},${DOCKER_IMAGE}:latest"
           echo ::set-output name=version::${VERSION}
@@ -44,16 +44,16 @@ jobs:
       - name: Build Helm Chart
         run: |
           TAG=${{ steps.prepare.outputs.version }} && VERSION="${TAG//v}"
-          git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/wireltd/charts.git output
+          git clone https://.:${{ secrets.GITHUB_TOKEN }}@github.com/skulup/charts.git output
           sed -i "s|version: 1.0.0|version: $VERSION|; s|appVersion: 1.0.0|appVersion: $VERSION|" deploy/charts/pulsar-operator-chart/Chart.yaml
           helm package deploy/charts/pulsar-operator-chart/ -d output
-          helm repo index --url https://wireltd.github.io/charts/ output --merge index.yaml
+          helm repo index --url https://skulup.github.io/charts/ output --merge index.yaml
 
       - name: Index Helm Chart
         uses: cpina/github-action-push-to-another-repository@master
         with:
           source-directory: 'output'
-          destination-github-username: 'wireltd'
+          destination-github-username: 'skulup'
           destination-repository-name: 'charts'
           user-email: shawalpha5@gmail.com
         env:

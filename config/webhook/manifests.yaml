@@ -10,12 +10,12 @@ webhooks:
       service:
         name: webhook-service
         namespace: system
-        path: /mutate-pulsar-wirelimited-com-v1alpha1-pulsarcluster
+        path: /mutate-pulsar-skulup-com-v1alpha1-pulsarcluster
     failurePolicy: Fail
     name: mpulsarcluster.kb.io
     rules:
       - apiGroups:
-          - pulsar.wirelimited.com
+          - pulsar.skulup.com
         apiVersions:
           - v1alpha1
         operations:
@@ -28,12 +28,12 @@ webhooks:
       service:
         name: webhook-service
         namespace: system
-        path: /mutate-pulsar-wirelimited-com-v1alpha1-pulsarmanager
+        path: /mutate-pulsar-skulup-com-v1alpha1-pulsarmanager
     failurePolicy: Fail
     name: mpulsarmanager.kb.io
     rules:
       - apiGroups:
-          - pulsar.wirelimited.com
+          - pulsar.skulup.com
         apiVersions:
           - v1alpha1
         operations:
@@ -46,12 +46,12 @@ webhooks:
       service:
         name: webhook-service
         namespace: system
-        path: /mutate-pulsar-wirelimited-com-v1alpha1-pulsarproxy
+        path: /mutate-pulsar-skulup-com-v1alpha1-pulsarproxy
     failurePolicy: Fail
     name: mpulsarproxy.kb.io
     rules:
       - apiGroups:
-          - pulsar.wirelimited.com
+          - pulsar.skulup.com
         apiVersions:
           - v1alpha1
         operations:
@@ -72,12 +72,12 @@ webhooks:
       service:
         name: webhook-service
         namespace: system
-        path: /validate-pulsar-wirelimited-com-v1alpha1-pulsarcluster
+        path: /validate-pulsar-skulup-com-v1alpha1-pulsarcluster
     failurePolicy: Fail
     name: vpulsarcluster.kb.io
     rules:
       - apiGroups:
-          - pulsar.wirelimited.com
+          - pulsar.skulup.com
         apiVersions:
           - v1alpha1
         operations:
@@ -90,12 +90,12 @@ webhooks:
       service:
         name: webhook-service
         namespace: system
-        path: /validate-pulsar-wirelimited-com-v1alpha1-pulsarmanager
+        path: /validate-pulsar-skulup-com-v1alpha1-pulsarmanager
     failurePolicy: Fail
     name: vpulsarmanager.kb.io
     rules:
       - apiGroups:
-          - pulsar.wirelimited.com
+          - pulsar.skulup.com
         apiVersions:
           - v1alpha1
         operations:
@@ -108,12 +108,12 @@ webhooks:
       service:
         name: webhook-service
         namespace: system
-        path: /validate-pulsar-wirelimited-com-v1alpha1-pulsarproxy
+        path: /validate-pulsar-skulup-com-v1alpha1-pulsarproxy
     failurePolicy: Fail
     name: vpulsarproxy.kb.io
     rules:
       - apiGroups:
-          - pulsar.wirelimited.com
+          - pulsar.skulup.com
         apiVersions:
           - v1alpha1
         operations:

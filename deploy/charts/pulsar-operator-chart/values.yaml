@@ -1,7 +1,7 @@
 serviceAccountName: pulsar-operator-acc
 clusterRoleName: pulsar-operator-cr
 clusterRoleBindingName: pulsar-operator-crb
-defaultImage: wireltd/pulsar-operator:latest
+defaultImage: skulup/pulsar-operator:latest
 defaultImagePullPolicy: IfNotPresent
 namespacesToWatch: # list of namespaces the operator will watch; default to all
 
