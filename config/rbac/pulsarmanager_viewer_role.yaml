@@ -5,7 +5,7 @@ metadata:
   name: pulsarmanager-viewer-role
 rules:
   - apiGroups:
-      - pulsar.skulup.com
+      - pulsar.wirelimited.com
     resources:
       - pulsarmanagers
     verbs:
@@ -13,7 +13,7 @@ rules:
       - list
       - watch
   - apiGroups:
-      - pulsar.skulup.com
+      - pulsar.wirelimited.com
     resources:
       - pulsarmanagers/status
     verbs:

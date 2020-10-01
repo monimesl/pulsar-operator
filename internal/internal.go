@@ -29,7 +29,7 @@ import (
 const OperatorName = "pulsar-operator"
 
 // Domain defines the domain of the operator
-const Domain = "pulsar.skulup.com"
+const Domain = "pulsar.wirelimited.com"
 
 const (
 	// Broker defines a pulsar broker
@@ -41,7 +41,7 @@ const (
 )
 
 // LabelCluster defines the cluster a broker belongs to
-const LabelCluster = "pulsar.skulup.com/cluster"
+const LabelCluster = "pulsar.wirelimited.com/cluster"
 const annPrometheusScrape = "prometheus.io/scrape"
 const annPrometheusPort = "prometheus.io/port"
 

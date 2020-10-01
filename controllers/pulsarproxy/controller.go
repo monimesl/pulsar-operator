@@ -50,8 +50,8 @@ func (r *Reconciler) Configure(ctx reconciler.Context) error {
 		Complete(r)
 }
 
-// +kubebuilder:rbac:groups=pulsar.skulup.com,resources=pulsarproxies,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=pulsar.skulup.com,resources=pulsarproxies/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=pulsar.wirelimited.com,resources=pulsarproxies,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=pulsar.wirelimited.com,resources=pulsarproxies/status,verbs=get;update;patch
 
 // Reconciler performs a full reconciliation for the object referred to by the Request.
 func (r *Reconciler) Reconcile(request reconcile.Request) (reconcile.Result, error) {

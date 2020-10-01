@@ -28,7 +28,7 @@ var pulsarclusterlog = logf.Log.WithName("pulsarcluster-resource")
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 
-// +kubebuilder:webhook:path=/mutate-pulsar-skulup-com-v1alpha1-pulsarcluster,mutating=true,failurePolicy=fail,groups=pulsar.skulup.com,resources=pulsarclusters,verbs=create;update,versions=v1alpha1,name=mpulsarcluster.kb.io
+// +kubebuilder:webhook:path=/mutate-pulsar-skulup-com-v1alpha1-pulsarcluster,mutating=true,failurePolicy=fail,groups=pulsar.wirelimited.com,resources=pulsarclusters,verbs=create;update,versions=v1alpha1,name=mpulsarcluster.kb.io
 
 var _ webhook.Defaulter = &PulsarCluster{}
 
@@ -39,7 +39,7 @@ func (in *PulsarCluster) Default() {
 	in.setStatusDefaults()
 }
 
-// +kubebuilder:webhook:verbs=create;update,path=/validate-pulsar-skulup-com-v1alpha1-pulsarcluster,mutating=false,failurePolicy=fail,groups=pulsar.skulup.com,resources=pulsarclusters,versions=v1alpha1,name=vpulsarcluster.kb.io
+// +kubebuilder:webhook:verbs=create;update,path=/validate-pulsar-skulup-com-v1alpha1-pulsarcluster,mutating=false,failurePolicy=fail,groups=pulsar.wirelimited.com,resources=pulsarclusters,versions=v1alpha1,name=vpulsarcluster.kb.io
 
 var _ webhook.Validator = &PulsarCluster{}
 

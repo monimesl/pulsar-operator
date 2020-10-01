@@ -5,9 +5,9 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.3.0
   creationTimestamp: null
-  name: pulsarproxies.pulsar.skulup.com
+  name: pulsarproxies.pulsar.wirelimited.com
 spec:
-  group: pulsar.skulup.com
+  group: pulsar.wirelimited.com
   names:
     kind: PulsarProxy
     listKind: PulsarProxyList
