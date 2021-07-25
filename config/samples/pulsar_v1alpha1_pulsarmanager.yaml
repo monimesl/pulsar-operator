@@ -1,7 +1,0 @@
-apiVersion: pulsar.skulup.com/v1alpha1
-kind: PulsarManager
-metadata:
-  name: manager-1
-  namespace: pulsar
-spec:
-#  email: <email-address>
