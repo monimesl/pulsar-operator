@@ -1,0 +1,24 @@
+# permissions for end users to edit pulsarproxies.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pulsarproxy-editor-role
+rules:
+  - apiGroups:
+      - pulsar.monime.sl
+    resources:
+      - pulsarproxies
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - pulsar.monime.sl
+    resources:
+      - pulsarproxies/status
+    verbs:
+      - get

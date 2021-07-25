@@ -1,0 +1,7 @@
+apiVersion: pulsar.monime.sl/v1alpha1
+kind: PulsarManager
+metadata:
+  name: pulsarmanager-sample
+spec:
+  # Add fields here
+  foo: bar

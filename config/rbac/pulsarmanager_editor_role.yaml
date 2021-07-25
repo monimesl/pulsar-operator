@@ -1,0 +1,24 @@
+# permissions for end users to edit pulsarmanagers.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pulsarmanager-editor-role
+rules:
+  - apiGroups:
+      - pulsar.monime.sl
+    resources:
+      - pulsarmanagers
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - pulsar.monime.sl
+    resources:
+      - pulsarmanagers/status
+    verbs:
+      - get

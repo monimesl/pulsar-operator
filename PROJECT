@@ -1,0 +1,52 @@
+domain: monime.sl
+layout:
+- go.kubebuilder.io/v3
+plugins:
+  manifests.sdk.operatorframework.io/v2: {}
+  scorecard.sdk.operatorframework.io/v2: {}
+projectName: pulsar-operator
+repo: github.com/monimesl/pulsar-operator
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: monime.sl
+  group: pulsar
+  kind: PulsarCluster
+  path: github.com/monimesl/pulsar-operator/api/v1alpha1
+  version: v1alpha1
+  webhooks:
+    conversion: true
+    defaulting: true
+    validation: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: monime.sl
+  group: pulsar
+  kind: PulsarManager
+  path: github.com/monimesl/pulsar-operator/api/v1alpha1
+  version: v1alpha1
+  webhooks:
+    conversion: true
+    defaulting: true
+    validation: true
+    webhookVersion: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: monime.sl
+  group: pulsar
+  kind: PulsarProxy
+  path: github.com/monimesl/pulsar-operator/api/v1alpha1
+  version: v1alpha1
+  webhooks:
+    conversion: true
+    defaulting: true
+    validation: true
+    webhookVersion: v1
+version: "3"
