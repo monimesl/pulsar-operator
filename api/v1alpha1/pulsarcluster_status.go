@@ -16,16 +16,47 @@
 
 package v1alpha1
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+// ClusterStage represents the stage of the pulsar broker cluster
+type ClusterStage string
+
+const (
+	// ClusterStageInitialized - cluster object is created but statefulset not created
+	ClusterStageInitialized = "Initialized"
+	// ClusterStageLaunching - cluster is initialized and the pods have been created but not ready
+	ClusterStageLaunching = "Launched"
+	// ClusterStageRunning - cluster is launched and running
+	ClusterStageRunning = "Running"
+)
 
 // PulsarClusterStatus defines the observed state of PulsarCluster
 type PulsarClusterStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+
+	// Replicas is the number of desired bookkeeper nodes in the cluster
+	// +optional
+	Replicas int32 `json:"replicas"`
+
+	// CurrentReplicas is the number of current bookkeeper nodes in the cluster
+	// +optional
+	CurrentReplicas int32 `json:"currentReplicas"`
+
+	// ReadyReplicas is the number of ready bookkeeper nodes in the cluster
+	// +optional
+	ReadyReplicas int32 `json:"readyReplicas"`
+
+	// Metadata defines the metadata status of the cluster
+	// +optional
+	Metadata Metadata `json:"metadata,omitempty"`
 }
 
-// setDefaults set the defaults for the cluster spec and returns true otherwise false
+// Metadata defines the metadata status of the cluster
+type Metadata struct {
+	Stage                 ClusterStage `json:"stage,omitempty"`
+	ServiceMonitorVersion *string      `json:"serviceMonitorVersion,omitempty"`
+}
+
 func (in *PulsarClusterStatus) setDefaults() (changed bool) {
+	if in.Metadata.Stage == "" {
+		in.Metadata.Stage = ClusterStageInitialized
+	}
 	return
 }

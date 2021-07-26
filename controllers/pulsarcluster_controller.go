@@ -19,6 +19,7 @@ package controllers
 import (
 	"context"
 	"github.com/monimesl/operator-helper/reconciler"
+	"github.com/monimesl/pulsar-operator/controllers/pulsarcluster"
 	v12 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/api/policy/v1beta1"
@@ -30,7 +31,9 @@ import (
 var (
 	_                     reconciler.Context    = &PulsarClusterReconciler{}
 	_                     reconciler.Reconciler = &PulsarClusterReconciler{}
-	clusterReconcileFuncs                       = []func(ctx reconciler.Context, cluster *pulsarv1alpha1.PulsarCluster) error{}
+	clusterReconcileFuncs                       = []func(ctx reconciler.Context, cluster *pulsarv1alpha1.PulsarCluster) error{
+		pulsarcluster.ReconcileServices,
+	}
 )
 
 // PulsarClusterReconciler reconciles a PulsarCluster object

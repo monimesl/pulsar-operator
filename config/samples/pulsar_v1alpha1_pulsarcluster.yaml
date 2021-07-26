@@ -1,7 +1,10 @@
 apiVersion: pulsar.monime.sl/v1alpha1
 kind: PulsarCluster
 metadata:
-  name: pulsarcluster-sample
+  name: cluster-1
+  namespace: pulsar
 spec:
-  # Add fields here
-  foo: bar
+  zookeeperServers: "cluster-1-zk-headless.zookeeper.svc.cluster.local:2181"
+#  connectors:
+#    - name: "cassandra"
+#      url: "https://archive.apache.org/dist/pulsar/pulsar-2.8.0/connectors/pulsar-io-cassandra-2.8.0.nar"

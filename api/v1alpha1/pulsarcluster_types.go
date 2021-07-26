@@ -17,8 +17,11 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"fmt"
+	"github.com/monimesl/operator-helper/basetype"
 	"github.com/monimesl/operator-helper/reconciler"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"strings"
 )
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
@@ -53,6 +56,17 @@ type PulsarCluster struct {
 	Status PulsarClusterStatus `json:"status,omitempty"`
 }
 
+func (in *PulsarCluster) nameHasPLSIndicator() bool {
+	return strings.Contains(in.Name, "pls") || strings.Contains(in.Name, "pulsar")
+}
+
+func (in *PulsarCluster) generateName() string {
+	if in.nameHasPLSIndicator() {
+		return in.Name
+	}
+	return fmt.Sprintf("%s-pls", in.GetName())
+}
+
 // SetSpecDefaults set the defaults for the cluster spec and returns true otherwise false
 func (in *PulsarCluster) SetSpecDefaults() bool {
 	return in.Spec.setDefaults()
@@ -61,4 +75,42 @@ func (in *PulsarCluster) SetSpecDefaults() bool {
 // SetStatusDefaults set the defaults for the cluster status and returns true otherwise false
 func (in *PulsarCluster) SetStatusDefaults() bool {
 	return in.Status.setDefaults()
+}
+
+// ConfigMapName defines the name of the configmap object
+func (in *PulsarCluster) ConfigMapName() string {
+	return in.generateName()
+}
+
+// StatefulSetName defines the name of the statefulset object
+func (in *PulsarCluster) StatefulSetName() string {
+	return in.generateName()
+}
+
+// ClientServiceName defines the name of the client service object
+func (in *PulsarCluster) ClientServiceName() string {
+	return in.generateName()
+}
+
+// HeadlessServiceName defines the name of the headless service object
+func (in *PulsarCluster) HeadlessServiceName() string {
+	return fmt.Sprintf("%s-headless", in.ClientServiceName())
+}
+
+// ClientServiceFQDN defines the FQDN of the client service object
+func (in *PulsarCluster) ClientServiceFQDN() string {
+	return fmt.Sprintf("%s.%s.svc.%s", in.ClientServiceName(), in.Namespace, in.Spec.ClusterDomain)
+}
+
+func (in *PulsarCluster) CreateLabels(addPodLabels bool, more map[string]string) map[string]string {
+	return in.Spec.createLabels(in.Name, addPodLabels, more)
+}
+
+// Image the bookkeeper docker image for the cluster
+func (in *PulsarCluster) Image() basetype.Image {
+	return basetype.Image{
+		Repository: imageRepository,
+		PullPolicy: in.Spec.ImagePullPolicy,
+		Tag:        in.Spec.PulsarVersion,
+	}
 }
