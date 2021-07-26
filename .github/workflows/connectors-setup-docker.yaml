@@ -28,7 +28,7 @@ jobs:
       - name: Prepare Variables
         id: prepare
         run: |
-          DOCKER_IMAGE=monime/zookeeper-operator
+          DOCKER_IMAGE=monime/pulsar-connectors-setup
           VERSION=${GITHUB_REF#refs/tags/}
           TAGS="${DOCKER_IMAGE}:${VERSION},${DOCKER_IMAGE}:latest"
           echo ::set-output name=version::${VERSION}
