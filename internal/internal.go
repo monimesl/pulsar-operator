@@ -20,4 +20,4 @@ package internal
 const OperatorName = "pulsar-operator"
 
 // Domain defines the domain of the operator
-const Domain = "zookeeper.monime.sl"
+const Domain = "pulsar.monime.sl"

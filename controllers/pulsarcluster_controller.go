@@ -50,7 +50,7 @@ func (r *PulsarClusterReconciler) Configure(ctx reconciler.Context) error {
 		Complete(r)
 }
 
-// Reconcile handles reconciliation request for ZookeeperCluster instances
+// Reconcile handles reconciliation request for PulsarCluster instances
 func (r *PulsarClusterReconciler) Reconcile(_ context.Context, request reconcile.Request) (reconcile.Result, error) {
 	cluster := &pulsarv1alpha1.PulsarCluster{}
 	return r.Run(request, cluster, func(_ bool) (err error) {

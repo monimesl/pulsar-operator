@@ -1,6 +1,5 @@
 [![Language](https://img.shields.io/badge/Language-Go-blue)](https://golang.org/)
-
-[comment]: <> ([![Go Report Card]&#40;https://goreportcard.com/badge/github.com/monimesl/pulsar-operator&#41;]&#40;https://goreportcard.com/report/github.com/monimesl/pulsar-operator&#41;)
+[![Go Report Card](https://goreportcard.com/badge/github.com/monimesl/pulsar-operator)](https://goreportcard.com/report/github.com/monimesl/pulsar-operator)
 ![Build](https://github.com/monimesl/pulsar-operator/workflows/Build/badge.svg)
 
 # Apache Pulsar Operator
