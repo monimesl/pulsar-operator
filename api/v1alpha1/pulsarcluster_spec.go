@@ -27,8 +27,10 @@ import (
 )
 
 const (
-	imageRepository = "monime/pulsar"
-	defaultImageTag = "latest"
+	imageRepository                    = "monime/pulsar"
+	ConnectSetupImageRepository        = "monime/pulsar-connectors-setup"
+	DefaultConnectorsSetupImageVersion = "latest"
+	defaultImageTag                    = "latest"
 )
 
 const (
@@ -85,7 +87,8 @@ type PulsarClusterSpec struct {
 	// +kubebuilder:validation:Minimum=0
 	Size *int32 `json:"size,omitempty"`
 	// KOP configures the Kafka Protocol Handler
-	KOP KOP `json:"kop,omitempty"`
+	KOP        KOP         `json:"kop,omitempty"`
+	Connectors []Connector `json:"connectors,omitempty"`
 	// MaxUnavailableNodes defines the maximum number of nodes that
 	// can be unavailable as per kubernetes PodDisruptionBudget
 	// Default is 1.
@@ -157,6 +160,16 @@ type JVMOptions struct {
 	// Extra defines extra options
 	// +optional
 	Extra []string `json:"extra"`
+}
+
+type Connector struct {
+	Builtin string                `json:"builtin,omitempty"`
+	Custom  CustomConnectorSource `json:"custom,omitempty"`
+}
+
+type CustomConnectorSource struct {
+	URL     string            `json:"url,omitempty"`
+	Headers map[string]string `json:"headers,omitempty"`
 }
 
 func (in *Ports) setDefaults() (changed bool) {
@@ -249,6 +262,9 @@ func (in *PulsarClusterSpec) setDefaults() (changed bool) {
 	if in.KOP.SecuredPort == 0 {
 		changed = true
 		in.KOP.SecuredPort = defaultKopSSLPort
+	}
+	if in.Connectors == nil {
+		in.Connectors = make([]Connector, 0)
 	}
 	if in.ProbeConfig == nil {
 		changed = true

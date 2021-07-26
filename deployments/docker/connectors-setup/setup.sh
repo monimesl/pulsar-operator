@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
-
-PULSAR_CONNECTORS="aerospike"
+set -e -x
 
 PULSAR_VERSION=${PULSAR_VERSION:-2.8.0}
 PULSAR_CONNECTORS=${PULSAR_CONNECTORS:-""}

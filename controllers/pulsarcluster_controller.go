@@ -32,8 +32,9 @@ var (
 	_                     reconciler.Context    = &PulsarClusterReconciler{}
 	_                     reconciler.Reconciler = &PulsarClusterReconciler{}
 	clusterReconcileFuncs                       = []func(ctx reconciler.Context, cluster *pulsarv1alpha1.PulsarCluster) error{
-		pulsarcluster.ReconcileConfigMap,
 		pulsarcluster.ReconcileServices,
+		pulsarcluster.ReconcileConfigMap,
+		pulsarcluster.ReconcileStatefulSet,
 	}
 )
 
