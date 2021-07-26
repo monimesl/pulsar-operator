@@ -23,6 +23,7 @@ import (
 	"github.com/monimesl/operator-helper/operator/prometheus"
 	"github.com/monimesl/pulsar-operator/internal"
 	v1 "k8s.io/api/core/v1"
+	"strings"
 )
 
 const (
@@ -31,12 +32,14 @@ const (
 )
 
 const (
-	ClientPortName     = "client-port"
-	ClientTLSPortName  = "client-tls-port"
-	WebPortName        = "web-port"
-	WebTLSPortName     = "web-tls-port"
-	MetricsPortName    = "metrics-port"
-	ServiceMetricsPath = "/metrics"
+	ClientPortName       = "client-port"
+	ClientTLSPortName    = "client-tls-port"
+	WebPortName          = "web-port"
+	WebTLSPortName       = "web-tls-port"
+	KopPlainTextPortName = "kop-plaintext-port"
+	KopSecuredPortName   = "kop-secure-port"
+	MetricsPortName      = "metrics-port"
+	ServiceMetricsPath   = "/metrics"
 )
 
 const (
@@ -49,6 +52,8 @@ const (
 	defaultClientTLSPort = 6651
 	defaultWebPort       = 8080
 	defaultWebTLSPort    = 8443
+	defaultKopPlainPort  = 9092
+	defaultKopSSLPort    = 9093
 )
 
 var (
@@ -79,6 +84,8 @@ type PulsarClusterSpec struct {
 	ImagePullPolicy v1.PullPolicy `json:"imagePullPolicy,omitempty"`
 	// +kubebuilder:validation:Minimum=0
 	Size *int32 `json:"size,omitempty"`
+	// KOP configures the Kafka Protocol Handler
+	KOP KOP `json:"kop,omitempty"`
 	// MaxUnavailableNodes defines the maximum number of nodes that
 	// can be unavailable as per kubernetes PodDisruptionBudget
 	// Default is 1.
@@ -89,15 +96,19 @@ type PulsarClusterSpec struct {
 	// https://github.com/apache/bookkeeper/tree/master/docker#configuration
 	// +optional
 	BrokerConfig map[string]string `json:"brokerConfig"`
+	// JVMOptions defines the JVM options for bookkeeper; this is useful for performance tuning.
+	// If unspecified, a reasonable defaults will be set
+	// +optional
+	JVMOptions JVMOptions `json:"jvmOptions"`
 	// PodConfig defines common configuration for the bookkeeper pods
 	// +optional
 	PodConfig basetype.PodConfig `json:"podConfig,omitempty"`
 	// ProbeConfig defines the probing settings for the bookkeeper containers
 	// +optional
 	ProbeConfig *pod.Probes `json:"probeConfig,omitempty"`
-	// MetricConfig
+	// MonitoringConfig
 	// +optional
-	MetricConfig *prometheus.MetricSpec `json:"metricConfig,omitempty"`
+	MonitoringConfig prometheus.MonitoringConfig `json:"monitoringConfig,omitempty"`
 	// Env defines environment variables for the bookkeeper statefulset pods
 	Env []v1.EnvVar `json:"env,omitempty"`
 
@@ -123,6 +134,31 @@ type Ports struct {
 	WebTLS int32 `json:"WebTLS,omitempty"`
 }
 
+type KOP struct {
+	// Enabled defines whether this KOP is enabled or not.
+	Enabled bool `json:"enabled,omitempty"`
+	// < 0 means disabled
+	// +optional
+	PlainTextPort int32 `json:"plainTextPort,omitempty"`
+	// < 0 means disabled
+	SecuredPort int32 `json:"SecuredPort,omitempty"`
+}
+
+type JVMOptions struct {
+	// Memory defines memory options
+	// +optional
+	Memory []string `json:"memory"`
+	// Gc defines garbage collection options
+	// +optional
+	Gc []string `json:"gc"`
+	// GcLogging defines garbage collection logging options
+	// +optional
+	GcLogging []string `json:"gcLogging"`
+	// Extra defines extra options
+	// +optional
+	Extra []string `json:"extra"`
+}
+
 func (in *Ports) setDefaults() (changed bool) {
 	if in.Client == 0 {
 		changed = true
@@ -139,6 +175,36 @@ func (in *Ports) setDefaults() (changed bool) {
 	if in.WebTLS == 0 {
 		changed = true
 		in.WebTLS = defaultWebTLSPort
+	}
+	return
+}
+
+func (in *JVMOptions) setDefaults() (changed bool) {
+	if in.Memory == nil {
+		changed = true
+		in.Memory = []string{
+			"-Xms128m", "-Xmx256m", "-XX:MaxDirectMemorySize=256m",
+		}
+	}
+	if in.Gc == nil {
+		changed = true
+		in.Gc = strings.Split(
+			"-XX:+UseG1GC -XX:MaxGCPauseMillis=10 -XX:+ParallelRefProcEnabled "+
+				"-XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis "+
+				"-XX:ParallelGCThreads=4 -XX:ConcGCThreads=4 -XX:G1NewSizePercent=50 -XX:+DisableExplicitGC "+
+				"-XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem -XX:+PrintGCDetails "+
+				"-XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintHeapAtGC -verbosegc -XX:G1LogLevel=finest", " ")
+	}
+	if in.GcLogging == nil {
+		changed = true
+		in.GcLogging = []string{}
+	}
+	if in.Extra == nil {
+		changed = true
+		in.Extra = strings.Split(
+			"-Dio.netty.leakDetectionLevel=disabled "+
+				"-Dio.netty.recycler.maxCapacity.default=1000 "+
+				"-Dio.netty.recycler.linkCapacity=1024", " ")
 	}
 	return
 }
@@ -176,11 +242,22 @@ func (in *PulsarClusterSpec) setDefaults() (changed bool) {
 	} else if in.Ports.setDefaults() {
 		changed = true
 	}
+	if in.KOP.PlainTextPort == 0 {
+		changed = true
+		in.KOP.PlainTextPort = defaultKopPlainPort
+	}
+	if in.KOP.SecuredPort == 0 {
+		changed = true
+		in.KOP.SecuredPort = defaultKopSSLPort
+	}
 	if in.ProbeConfig == nil {
 		changed = true
 		in.ProbeConfig = &pod.Probes{}
 		in.ProbeConfig.SetDefault()
 	} else if in.ProbeConfig.SetDefault() {
+		changed = true
+	}
+	if in.JVMOptions.setDefaults() {
 		changed = true
 	}
 	if in.PodConfig.TerminationGracePeriodSeconds == nil {

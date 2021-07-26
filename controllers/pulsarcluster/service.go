@@ -116,5 +116,14 @@ func servicePorts(c *v1alpha1.PulsarCluster) []v1.ServicePort {
 	if ports.WebTLS > 0 {
 		svcPorts = append(svcPorts, v1.ServicePort{Name: v1alpha1.WebTLSPortName, Port: ports.WebTLS})
 	}
+	kop := c.Spec.KOP
+	if kop.Enabled {
+		if kop.PlainTextPort > 0 {
+			svcPorts = append(svcPorts, v1.ServicePort{Name: v1alpha1.KopPlainTextPortName, Port: kop.PlainTextPort})
+		}
+		if kop.SecuredPort > 0 {
+			svcPorts = append(svcPorts, v1.ServicePort{Name: v1alpha1.KopSecuredPortName, Port: kop.SecuredPort})
+		}
+	}
 	return svcPorts
 }
