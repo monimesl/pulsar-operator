@@ -23,21 +23,6 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// PulsarProxySpec defines the desired state of PulsarProxy
-type PulsarProxySpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	// Foo is an example field of PulsarProxy. Edit pulsarproxy_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
-}
-
-// PulsarProxyStatus defines the observed state of PulsarProxy
-type PulsarProxyStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-}
-
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
@@ -61,4 +46,14 @@ type PulsarProxyList struct {
 
 func init() {
 	SchemeBuilder.Register(&PulsarProxy{}, &PulsarProxyList{})
+}
+
+// SetSpecDefaults set the defaults for the cluster spec and returns true otherwise false
+func (in *PulsarProxy) SetSpecDefaults() bool {
+	return in.Spec.setDefaults()
+}
+
+// SetStatusDefaults set the defaults for the cluster status and returns true otherwise false
+func (in *PulsarProxy) SetStatusDefaults() bool {
+	return in.Status.setDefaults()
 }

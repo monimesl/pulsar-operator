@@ -17,18 +17,16 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"github.com/monimesl/operator-helper/config"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
-	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 )
 
-// log is for logging in this package.
-var pulsarproxylog = logf.Log.WithName("pulsarproxy-resource")
-
-func (r *PulsarProxy) SetupWebhookWithManager(mgr ctrl.Manager) error {
+// SetupWebhookWithManager needed for webhook test suite
+func (in *PulsarProxy) SetupWebhookWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewWebhookManagedBy(mgr).
-		For(r).
+		For(in).
 		Complete()
 }
 
@@ -39,10 +37,10 @@ func (r *PulsarProxy) SetupWebhookWithManager(mgr ctrl.Manager) error {
 var _ webhook.Defaulter = &PulsarProxy{}
 
 // Default implements webhook.Defaulter so a webhook will be registered for the type
-func (r *PulsarProxy) Default() {
-	pulsarproxylog.Info("default", "name", r.Name)
-
-	// TODO(user): fill in your defaulting logic.
+func (in *PulsarProxy) Default() {
+	config.RequireRootLogger().Info("[Webhook] Setting defaults", "name", in.Name)
+	in.SetSpecDefaults()
+	in.SetStatusDefaults()
 }
 
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
@@ -51,25 +49,19 @@ func (r *PulsarProxy) Default() {
 var _ webhook.Validator = &PulsarProxy{}
 
 // ValidateCreate implements webhook.Validator so a webhook will be registered for the type
-func (r *PulsarProxy) ValidateCreate() error {
-	pulsarproxylog.Info("validate create", "name", r.Name)
-
-	// TODO(user): fill in your validation logic upon object creation.
+func (in *PulsarProxy) ValidateCreate() error {
+	config.RequireRootLogger().Info("[validate create]", "name", in.Name)
 	return nil
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
-func (r *PulsarProxy) ValidateUpdate(old runtime.Object) error {
-	pulsarproxylog.Info("validate update", "name", r.Name)
-
-	// TODO(user): fill in your validation logic upon object update.
+func (in *PulsarProxy) ValidateUpdate(old runtime.Object) error {
+	config.RequireRootLogger().Info("[validate update]", "name", in.Name)
 	return nil
 }
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
-func (r *PulsarProxy) ValidateDelete() error {
-	pulsarproxylog.Info("validate delete", "name", r.Name)
-
-	// TODO(user): fill in your validation logic upon object deletion.
+func (in *PulsarProxy) ValidateDelete() error {
+	config.RequireRootLogger().Info("[validate delete]", "name", in.Name)
 	return nil
 }

@@ -23,19 +23,17 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// PulsarManagerSpec defines the desired state of PulsarManager
-type PulsarManagerSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+//+kubebuilder:object:root=true
 
-	// Foo is an example field of PulsarManager. Edit pulsarmanager_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+// PulsarManagerList contains a list of PulsarManager
+type PulsarManagerList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []PulsarManager `json:"items"`
 }
 
-// PulsarManagerStatus defines the observed state of PulsarManager
-type PulsarManagerStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+func init() {
+	SchemeBuilder.Register(&PulsarManager{}, &PulsarManagerList{})
 }
 
 //+kubebuilder:object:root=true
@@ -50,15 +48,12 @@ type PulsarManager struct {
 	Status PulsarManagerStatus `json:"status,omitempty"`
 }
 
-//+kubebuilder:object:root=true
-
-// PulsarManagerList contains a list of PulsarManager
-type PulsarManagerList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []PulsarManager `json:"items"`
+// SetSpecDefaults set the defaults for the cluster spec and returns true otherwise false
+func (in *PulsarManager) SetSpecDefaults() bool {
+	return in.Spec.setDefaults()
 }
 
-func init() {
-	SchemeBuilder.Register(&PulsarManager{}, &PulsarManagerList{})
+// SetStatusDefaults set the defaults for the cluster status and returns true otherwise false
+func (in *PulsarManager) SetStatusDefaults() bool {
+	return in.Status.setDefaults()
 }

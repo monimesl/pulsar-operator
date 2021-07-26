@@ -17,25 +17,28 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"github.com/monimesl/operator-helper/reconciler"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// PulsarClusterSpec defines the desired state of PulsarCluster
-type PulsarClusterSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+var (
+	_ reconciler.Defaulting = &PulsarCluster{}
+)
 
-	// Foo is an example field of PulsarCluster. Edit pulsarcluster_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+//+kubebuilder:object:root=true
+
+// PulsarClusterList contains a list of PulsarCluster
+type PulsarClusterList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []PulsarCluster `json:"items"`
 }
 
-// PulsarClusterStatus defines the observed state of PulsarCluster
-type PulsarClusterStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+func init() {
+	SchemeBuilder.Register(&PulsarCluster{}, &PulsarClusterList{})
 }
 
 //+kubebuilder:object:root=true
@@ -50,15 +53,12 @@ type PulsarCluster struct {
 	Status PulsarClusterStatus `json:"status,omitempty"`
 }
 
-//+kubebuilder:object:root=true
-
-// PulsarClusterList contains a list of PulsarCluster
-type PulsarClusterList struct {
-	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []PulsarCluster `json:"items"`
+// SetSpecDefaults set the defaults for the cluster spec and returns true otherwise false
+func (in *PulsarCluster) SetSpecDefaults() bool {
+	return in.Spec.setDefaults()
 }
 
-func init() {
-	SchemeBuilder.Register(&PulsarCluster{}, &PulsarClusterList{})
+// SetStatusDefaults set the defaults for the cluster status and returns true otherwise false
+func (in *PulsarCluster) SetStatusDefaults() bool {
+	return in.Status.setDefaults()
 }
