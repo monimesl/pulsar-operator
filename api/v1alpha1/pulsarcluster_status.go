@@ -22,8 +22,8 @@ type ClusterStage string
 const (
 	// ClusterStageInitialized - cluster object is created but statefulset not created
 	ClusterStageInitialized = "Initialized"
-	// ClusterStageLaunching - cluster is initialized and the pods have been created but not ready
-	ClusterStageLaunching = "Launched"
+	// ClusterStageLaunched - cluster is initialized and the pods have been created but not ready
+	ClusterStageLaunched = "Launched"
 	// ClusterStageRunning - cluster is launched and running
 	ClusterStageRunning = "Running"
 )
@@ -55,8 +55,5 @@ type Metadata struct {
 }
 
 func (in *PulsarClusterStatus) setDefaults() (changed bool) {
-	if in.Metadata.Stage == "" {
-		in.Metadata.Stage = ClusterStageInitialized
-	}
 	return
 }

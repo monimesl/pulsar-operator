@@ -18,12 +18,9 @@ package pulsarcluster
 
 import (
 	"context"
-	"fmt"
 	"github.com/monimesl/operator-helper/k8s/configmap"
-	"github.com/monimesl/operator-helper/oputil"
 	"github.com/monimesl/operator-helper/reconciler"
 	"github.com/monimesl/pulsar-operator/api/v1alpha1"
-	"github.com/prometheus/common/log"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"strings"
@@ -56,23 +53,13 @@ func ReconcileConfigMap(ctx reconciler.Context, cluster *v1alpha1.PulsarCluster)
 
 func createConfigMap(cluster *v1alpha1.PulsarCluster) *v1.ConfigMap {
 	jvmOptions := cluster.Spec.JVMOptions
-	excludedOptions := []string{
-		"PULSAR_GC", "PULSAR_MEM", "PULSAR_EXTRA_OPTS", "PULSAR_GC_LOG",
-	}
 	data := map[string]string{
 		"PULSAR_GC":         strings.Join(jvmOptions.Gc, " "),
 		"PULSAR_MEM":        strings.Join(jvmOptions.Memory, " "),
 		"PULSAR_EXTRA_OPTS": strings.Join(jvmOptions.Extra, " "),
 		"PULSAR_GC_LOG":     strings.Join(jvmOptions.GcLogging, " "),
 	}
-	for k, v := range cluster.Spec.BrokerConfig {
-		if !strings.HasPrefix(k, "PULSAR_PREFIX_") {
-			k = fmt.Sprintf("PULSAR_PREFIX_%s", k)
-		}
-		if oputil.Contains(excludedOptions, k) {
-			log.Warnf("ignoring the config: %s", k)
-			continue
-		}
+	for k, v := range processEnvVarMap(cluster.Spec.BrokerConfig) {
 		data[k] = v
 	}
 	return configmap.New(cluster.Namespace, cluster.ConfigMapName(), data)

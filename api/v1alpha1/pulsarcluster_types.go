@@ -102,6 +102,11 @@ func (in *PulsarCluster) ClientServiceFQDN() string {
 	return fmt.Sprintf("%s.%s.svc.%s", in.ClientServiceName(), in.Namespace, in.Spec.ClusterDomain)
 }
 
+// ClientHeadlessServiceFQDN defines the FQDN of the client headless service object
+func (in *PulsarCluster) ClientHeadlessServiceFQDN() string {
+	return fmt.Sprintf("%s.%s.svc.%s", in.HeadlessServiceName(), in.Namespace, in.Spec.ClusterDomain)
+}
+
 func (in *PulsarCluster) CreateLabels(addPodLabels bool, more map[string]string) map[string]string {
 	return in.Spec.createLabels(in.Name, addPodLabels, more)
 }

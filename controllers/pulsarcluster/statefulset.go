@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	prepareVolume          = "prepare"
-	prepareVolumeMouthPath = "/prepare"
+	setupVolume          = "broker-setup"
+	setupVolumeMouthPath = "/broker-setup"
 )
 
 // ReconcileStatefulSet reconcile the statefulset of the specified cluster
@@ -86,53 +86,59 @@ func createPodTemplateSpec(c *v1alpha1.PulsarCluster, labels map[string]string) 
 }
 
 func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
-	containerPorts := createContainerPorts(c)
-	environment := []v12.EnvFromSource{
-		{
-			ConfigMapRef: &v12.ConfigMapEnvSource{
-				LocalObjectReference: v12.LocalObjectReference{
-					Name: c.ConfigMapName(),
-				},
-			},
-		},
-	}
-	prepareEnv := []v12.EnvVar{
+	setupEnv := []v12.EnvVar{
 		{Name: "PULSAR_VERSION", Value: c.Spec.PulsarVersion},
 		{Name: "PULSAR_CONNECTORS", Value: generateConnectorString(c)},
-		{Name: "PULSAR_CONNECTOR_DIRECTORY", Value: prepareVolumeMouthPath},
+		{Name: "PULSAR_SETUP_DIRECTORY", Value: setupVolumeMouthPath},
 	}
-	envs := make([]v12.EnvVar, 0)
-	envs = append(envs, c.Spec.Env...)
-	envs = append(envs, prepareEnv...)
+	envs := processEnvVars(c.Spec.Env)
 	volumeMounts := []v12.VolumeMount{
-		{Name: prepareVolume, MountPath: prepareVolumeMouthPath},
-	}
-	initContainers := []v12.Container{
-		{
-			Name:            "connectors-setup",
-			Image:           v1alpha1.ConnectSetupImageRepository,
-			ImagePullPolicy: v1alpha1.DefaultConnectorsSetupImageVersion,
-			VolumeMounts:    volumeMounts,
-		},
+		{Name: setupVolume, MountPath: setupVolumeMouthPath},
 	}
 	image := c.Image()
+	initContainers := []v12.Container{
+		{
+			Name: "broker-setup",
+			Image: fmt.Sprintf("%s:%s",
+				v1alpha1.ConnectSetupImageRepository,
+				v1alpha1.DefaultConnectorsSetupImageVersion),
+			ImagePullPolicy: image.PullPolicy,
+			VolumeMounts:    volumeMounts,
+			Env:             setupEnv,
+		},
+	}
 	containers := []v12.Container{
 		{
 			Name:            "pulsar-broker",
-			Ports:           containerPorts,
+			Ports:           createContainerPorts(c),
 			Image:           image.ToString(),
 			ImagePullPolicy: image.PullPolicy,
-			EnvFrom:         environment,
 			VolumeMounts:    volumeMounts,
 			Lifecycle:       &v12.Lifecycle{PreStop: createPreStopHandler()},
-			Env:             pod.DecorateContainerEnvVars(true, c.Spec.Env...),
-			Command:         []string{"sh", "-c"},
-			Args:            []string{"sleep infinity"},
+			Env:             pod.DecorateContainerEnvVars(true, envs...),
+			EnvFrom: []v12.EnvFromSource{
+				{
+					ConfigMapRef: &v12.ConfigMapEnvSource{
+						LocalObjectReference: v12.LocalObjectReference{
+							Name: c.ConfigMapName(),
+						},
+					},
+				},
+			},
+			Command: []string{"sh", "-c"},
+			Args: []string{
+				strings.Join([]string{
+					"rm -rf /pulsar/connectors",
+					"cp -r \"$PULSAR_SETUP_DIRECTORY/connectors\" /pulsar",
+					"bin/apply-config-from-env.py conf/broker.conf",
+					"sleep infinity",
+				}, "; "),
+			},
 		},
 	}
 	volumes := []v12.Volume{
 		{
-			Name: prepareVolume,
+			Name: setupVolume,
 			VolumeSource: v12.VolumeSource{
 				EmptyDir: &v12.EmptyDirVolumeSource{},
 			},
@@ -149,7 +155,6 @@ func generateConnectorString(c *v1alpha1.PulsarCluster) string {
 		if connector.Builtin != "" {
 			formats[i] = connector.Builtin
 		} else {
-			// http://storage.com/flix-connectors-2.8.0.nar;Authorization:jddsd009e32,Token:4543edsdsds"
 			headers := ""
 			for k, v := range connector.Custom.Headers {
 				if headers == "" {

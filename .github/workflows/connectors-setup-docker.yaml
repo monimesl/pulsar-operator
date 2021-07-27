@@ -28,7 +28,7 @@ jobs:
       - name: Prepare Variables
         id: prepare
         run: |
-          DOCKER_IMAGE=monime/pulsar-connectors-setup
+          DOCKER_IMAGE=monime/pulsar-broker-setup
           VERSION=${GITHUB_REF#refs/tags/}
           TAGS="${DOCKER_IMAGE}:${VERSION},${DOCKER_IMAGE}:latest"
           echo ::set-output name=version::${VERSION}
@@ -62,7 +62,7 @@ jobs:
         name: Build and Deploy
         with:
           push: true
-          file: deployments/docker/connectors-setup/Dockerfile
+          file: deployments/docker/broker-setup/Dockerfile
           tags: ${{ steps.prepare.outputs.tags }}
           labels: |
             org.opencontainers.image.title=${{ github.event.repository.name }}

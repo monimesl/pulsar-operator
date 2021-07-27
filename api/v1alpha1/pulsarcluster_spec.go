@@ -27,10 +27,10 @@ import (
 )
 
 const (
-	imageRepository                    = "monime/pulsar"
-	ConnectSetupImageRepository        = "monime/pulsar-connectors-setup"
+	imageRepository                    = "apachepulsar/pulsar"
+	ConnectSetupImageRepository        = "monime/pulsar-broker-setup"
 	DefaultConnectorsSetupImageVersion = "latest"
-	defaultImageTag                    = "latest"
+	defaultImageTag                    = "2.8.0"
 )
 
 const (
@@ -75,7 +75,11 @@ type PulsarClusterSpec struct {
 	// ZookeeperServers specifies the hostname/IP address and port in the format "hostname:port".
 	// +kubebuilder:validation:Required
 	ZookeeperServers string `json:"zookeeperServers"`
-	// ZookeeperServers specifies the hostname/IP address and port in the format "hostname:port".
+	// BookkeeperClusterUri specifies the URI of the existing BookKeeper cluster that you want to use.
+	// see https://pulsar.apache.org/docs/en/reference-cli-tools/#initialize-cluster-metadata
+	// +kubebuilder:validation:Required
+	BookkeeperClusterUri string `json:"bookkeeperClusterUri"`
+	// ConfigurationStoreServers specifies the configuration store connection string (as a comma-separated list)
 	// +optional
 	ConfigurationStoreServers string `json:"configurationStoreServers"`
 	// PulsarVersion defines the version of bookkeeper to use
@@ -203,10 +207,10 @@ func (in *JVMOptions) setDefaults() (changed bool) {
 		changed = true
 		in.Gc = strings.Split(
 			"-XX:+UseG1GC -XX:MaxGCPauseMillis=10 -XX:+ParallelRefProcEnabled "+
-				"-XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis "+
+				"-XX:+UnlockExperimentalVMOptions -XX:+DoEscapeAnalysis -verbosegc "+
 				"-XX:ParallelGCThreads=4 -XX:ConcGCThreads=4 -XX:G1NewSizePercent=50 -XX:+DisableExplicitGC "+
-				"-XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem -XX:+PrintGCDetails "+
-				"-XX:+PrintGCTimeStamps -XX:+PrintGCApplicationStoppedTime -XX:+PrintHeapAtGC -verbosegc -XX:G1LogLevel=finest", " ")
+				"-XX:-ResizePLAB -XX:+ExitOnOutOfMemoryError -XX:+PerfDisableSharedMem -Xlog:gc* ",
+			" ")
 	}
 	if in.GcLogging == nil {
 		changed = true
@@ -236,6 +240,9 @@ func (in *PulsarClusterSpec) setDefaults() (changed bool) {
 		changed = true
 		size := &defaultClusterSize
 		in.Size = size
+	}
+	if in.ConfigurationStoreServers == "" {
+		in.ConfigurationStoreServers = in.ZookeeperServers
 	}
 	if in.MaxUnavailableNodes < 0 {
 		changed = true
