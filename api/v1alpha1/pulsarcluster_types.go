@@ -111,7 +111,7 @@ func (in *PulsarCluster) CreateLabels(addPodLabels bool, more map[string]string)
 	return in.Spec.createLabels(in.Name, addPodLabels, more)
 }
 
-// Image the bookkeeper docker image for the cluster
+// Image specifies the pulsar image to use
 func (in *PulsarCluster) Image() basetype.Image {
 	return basetype.Image{
 		Repository: imageRepository,

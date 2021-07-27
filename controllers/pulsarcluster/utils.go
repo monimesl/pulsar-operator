@@ -12,10 +12,10 @@ const (
 	pulsarConfigEnvPrefix = "PULSAR_PREFIX_"
 )
 
-var excludedOptions = addPulsarEnvPrefix([]string{
+var notAllowedVariables = addPulsarEnvPrefix([]string{
 	"clusterName", "zookeeperServers",
-	"configurationStoreServers", "PULSAR_GC",
-	"PULSAR_MEM", "PULSAR_EXTRA_OPTS", "PULSAR_GC_LOG",
+	"configurationStoreServers", "bookkeeperMetadataServiceUri",
+	"PULSAR_GC", "PULSAR_MEM", "PULSAR_EXTRA_OPTS", "PULSAR_GC_LOG",
 })
 
 func processEnvVars(envs []v1.EnvVar) []v1.EnvVar {
@@ -27,7 +27,7 @@ func processEnvVars(envs []v1.EnvVar) []v1.EnvVar {
 		if !strings.HasPrefix(name, pulsarConfigEnvPrefix) {
 			name = fmt.Sprintf("%s%s", pulsarConfigEnvPrefix, name)
 		}
-		if oputil.Contains(excludedOptions, name) {
+		if oputil.Contains(notAllowedVariables, name) {
 			log.Warnf("ignoring the config: %s", actual)
 			continue
 		}
@@ -38,14 +38,14 @@ func processEnvVars(envs []v1.EnvVar) []v1.EnvVar {
 	return newEnvs
 }
 
-func processEnvVarMap(envs map[string]string) map[string]string {
+func processEnvVarMap(envs map[string]string, ignoreNotAllowedVars bool) map[string]string {
 	newEnvs := map[string]string{}
 	for name, v := range envs {
 		actual := name
 		if !strings.HasPrefix(name, pulsarConfigEnvPrefix) {
 			name = fmt.Sprintf("%s%s", pulsarConfigEnvPrefix, name)
 		}
-		if oputil.Contains(excludedOptions, name) {
+		if ignoreNotAllowedVars && oputil.Contains(notAllowedVariables, name) {
 			log.Warnf("ignoring the config: %s", actual)
 			continue
 		}

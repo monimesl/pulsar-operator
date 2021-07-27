@@ -41,7 +41,7 @@ func ReconcileStatefulSet(ctx reconciler.Context, cluster *v1alpha1.PulsarCluste
 			if err := ctx.SetOwnershipReference(cluster, sts); err != nil {
 				return err
 			}
-			ctx.Logger().Info("Creating the zookeeper statefulset.",
+			ctx.Logger().Info("Creating the pulsar broker statefulset.",
 				"StatefulSet.Name", sts.GetName(),
 				"StatefulSet.Namespace", sts.GetNamespace())
 			if err := ctx.Client().Create(context.TODO(), sts); err != nil {
@@ -56,7 +56,7 @@ func ReconcileStatefulSet(ctx reconciler.Context, cluster *v1alpha1.PulsarCluste
 
 func updateStatefulset(ctx reconciler.Context, sts *v1.StatefulSet, cluster *v1alpha1.PulsarCluster) error {
 	sts.Spec.Replicas = cluster.Spec.Size
-	ctx.Logger().Info("Updating the zookeeper statefulset.",
+	ctx.Logger().Info("Updating the pulsar broker  statefulset.",
 		"StatefulSet.Name", sts.GetName(),
 		"StatefulSet.Namespace", sts.GetNamespace(), "NewReplicas", cluster.Spec.Size)
 	return ctx.Client().Update(context.TODO(), sts)
@@ -91,7 +91,6 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 		{Name: "PULSAR_CONNECTORS", Value: generateConnectorString(c)},
 		{Name: "PULSAR_SETUP_DIRECTORY", Value: setupVolumeMouthPath},
 	}
-	envs := processEnvVars(c.Spec.Env)
 	volumeMounts := []v12.VolumeMount{
 		{Name: setupVolume, MountPath: setupVolumeMouthPath},
 	}
@@ -100,13 +99,17 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 		{
 			Name: "broker-setup",
 			Image: fmt.Sprintf("%s:%s",
-				v1alpha1.ConnectSetupImageRepository,
-				v1alpha1.DefaultConnectorsSetupImageVersion),
+				v1alpha1.BrokerSetupImageRepository,
+				v1alpha1.DefaultBrokerSetupImageVersion),
 			ImagePullPolicy: image.PullPolicy,
 			VolumeMounts:    volumeMounts,
 			Env:             setupEnv,
 		},
 	}
+	envs := processEnvVars(c.Spec.Env)
+	envs = append(envs, v12.EnvVar{
+		Name: "PULSAR_SETUP_DIRECTORY", Value: setupVolumeMouthPath,
+	})
 	containers := []v12.Container{
 		{
 			Name:            "pulsar-broker",
@@ -131,7 +134,7 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 					"rm -rf /pulsar/connectors",
 					"cp -r \"$PULSAR_SETUP_DIRECTORY/connectors\" /pulsar",
 					"bin/apply-config-from-env.py conf/broker.conf",
-					"sleep infinity",
+					"bin/pulsar broker",
 				}, "; "),
 			},
 		},
@@ -150,20 +153,19 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 }
 
 func generateConnectorString(c *v1alpha1.PulsarCluster) string {
-	formats := make([]string, len(c.Spec.Connectors))
-	for i, connector := range c.Spec.Connectors {
-		if connector.Builtin != "" {
-			formats[i] = connector.Builtin
-		} else {
-			headers := ""
-			for k, v := range connector.Custom.Headers {
-				if headers == "" {
-					headers += ";"
-				}
-				headers += fmt.Sprintf("%s:%s", k, v)
+	formats := make([]string, 0)
+	for _, connector := range c.Spec.Connectors.Builtin {
+		formats = append(formats, connector)
+	}
+	for i, connector := range c.Spec.Connectors.Custom {
+		headers := ""
+		for k, v := range connector.Headers {
+			if headers == "" {
+				headers += ";"
 			}
-			formats[i] = fmt.Sprintf("%s;%s", connector.Custom.URL, headers)
+			headers += fmt.Sprintf("%s:%s", k, v)
 		}
+		formats[i] = fmt.Sprintf("%s;%s", connector.URL, headers)
 	}
 	return strings.Join(formats, " ")
 }

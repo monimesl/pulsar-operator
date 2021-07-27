@@ -53,14 +53,22 @@ func ReconcileConfigMap(ctx reconciler.Context, cluster *v1alpha1.PulsarCluster)
 
 func createConfigMap(cluster *v1alpha1.PulsarCluster) *v1.ConfigMap {
 	jvmOptions := cluster.Spec.JVMOptions
-	data := map[string]string{
-		"PULSAR_GC":         strings.Join(jvmOptions.Gc, " "),
-		"PULSAR_MEM":        strings.Join(jvmOptions.Memory, " "),
-		"PULSAR_EXTRA_OPTS": strings.Join(jvmOptions.Extra, " "),
-		"PULSAR_GC_LOG":     strings.Join(jvmOptions.GcLogging, " "),
-	}
-	for k, v := range processEnvVarMap(cluster.Spec.BrokerConfig) {
+	data := processEnvVarMap(map[string]string{
+		"managedLedgerDefaultEnsembleSize": "1",
+		"managedLedgerDefaultWriteQuorum":  "1",
+		"managedLedgerDefaultAckQuorum":    "1",
+		"clusterName":                      cluster.GetName(),
+		"zookeeperServers":                 cluster.Spec.ZookeeperServers,
+		"bookkeeperMetadataServiceUri":     cluster.Spec.BookkeeperClusterUri,
+		"configurationStoreServers":        cluster.Spec.ConfigurationStoreServers,
+		"PULSAR_GC":                        strings.Join(jvmOptions.Gc, " "),
+		"PULSAR_EXTRA_OPTS":                strings.Join(jvmOptions.Extra, " "),
+		"PULSAR_MEM":                       strings.Join(jvmOptions.Memory, " "),
+		"PULSAR_GC_LOG":                    strings.Join(jvmOptions.GcLogging, " "),
+	}, false)
+	for k, v := range processEnvVarMap(cluster.Spec.BrokerConfig, true) {
 		data[k] = v
 	}
-	return configmap.New(cluster.Namespace, cluster.ConfigMapName(), data)
+	configMapData := processEnvVarMap(data, false)
+	return configmap.New(cluster.Namespace, cluster.ConfigMapName(), configMapData)
 }

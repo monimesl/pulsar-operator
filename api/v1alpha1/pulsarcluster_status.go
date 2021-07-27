@@ -31,15 +31,15 @@ const (
 // PulsarClusterStatus defines the observed state of PulsarCluster
 type PulsarClusterStatus struct {
 
-	// Replicas is the number of desired bookkeeper nodes in the cluster
+	// Replicas is the number of desired broker nodes in the cluster
 	// +optional
 	Replicas int32 `json:"replicas"`
 
-	// CurrentReplicas is the number of current bookkeeper nodes in the cluster
+	// CurrentReplicas is the number of current broker nodes in the cluster
 	// +optional
 	CurrentReplicas int32 `json:"currentReplicas"`
 
-	// ReadyReplicas is the number of ready bookkeeper nodes in the cluster
+	// ReadyReplicas is the number of ready broker nodes in the cluster
 	// +optional
 	ReadyReplicas int32 `json:"readyReplicas"`
 

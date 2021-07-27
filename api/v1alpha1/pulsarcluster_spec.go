@@ -27,10 +27,10 @@ import (
 )
 
 const (
-	imageRepository                    = "apachepulsar/pulsar"
-	ConnectSetupImageRepository        = "monime/pulsar-broker-setup"
-	DefaultConnectorsSetupImageVersion = "latest"
-	defaultImageTag                    = "2.8.0"
+	imageRepository                = "apachepulsar/pulsar"
+	BrokerSetupImageRepository     = "monime/pulsar-broker-setup"
+	DefaultBrokerSetupImageVersion = "latest"
+	defaultImageTag                = "2.8.0"
 )
 
 const (
@@ -82,7 +82,7 @@ type PulsarClusterSpec struct {
 	// ConfigurationStoreServers specifies the configuration store connection string (as a comma-separated list)
 	// +optional
 	ConfigurationStoreServers string `json:"configurationStoreServers"`
-	// PulsarVersion defines the version of bookkeeper to use
+	// PulsarVersion defines the version of broker to use
 	// +optional
 	PulsarVersion string `json:"pulsarVersion,omitempty"`
 	// ImagePullPolicy describes a policy for if/when to pull the image
@@ -91,8 +91,8 @@ type PulsarClusterSpec struct {
 	// +kubebuilder:validation:Minimum=0
 	Size *int32 `json:"size,omitempty"`
 	// KOP configures the Kafka Protocol Handler
-	KOP        KOP         `json:"kop,omitempty"`
-	Connectors []Connector `json:"connectors,omitempty"`
+	KOP        KOP       `json:"kop,omitempty"`
+	Connectors Connector `json:"connectors,omitempty"`
 	// MaxUnavailableNodes defines the maximum number of nodes that
 	// can be unavailable as per kubernetes PodDisruptionBudget
 	// Default is 1.
@@ -100,29 +100,28 @@ type PulsarClusterSpec struct {
 	MaxUnavailableNodes int32  `json:"maxUnavailableNodes"`
 	Ports               *Ports `json:"ports,omitempty"`
 	// BrokerConfig defines the Bookkeeper configurations to override the bk_server.conf
-	// https://github.com/apache/bookkeeper/tree/master/docker#configuration
 	// +optional
 	BrokerConfig map[string]string `json:"brokerConfig"`
-	// JVMOptions defines the JVM options for bookkeeper; this is useful for performance tuning.
+	// JVMOptions defines the JVM options for pulsar broker; this is useful for performance tuning.
 	// If unspecified, a reasonable defaults will be set
 	// +optional
 	JVMOptions JVMOptions `json:"jvmOptions"`
-	// PodConfig defines common configuration for the bookkeeper pods
+	// PodConfig defines common configuration for the broker pods
 	// +optional
 	PodConfig basetype.PodConfig `json:"podConfig,omitempty"`
-	// ProbeConfig defines the probing settings for the bookkeeper containers
+	// Env defines environment variables for the broker statefulset pods
+	Env []v1.EnvVar `json:"env,omitempty"`
+	// ProbeConfig defines the probing settings for the broker containers
 	// +optional
 	ProbeConfig *pod.Probes `json:"probeConfig,omitempty"`
 	// MonitoringConfig
 	// +optional
 	MonitoringConfig prometheus.MonitoringConfig `json:"monitoringConfig,omitempty"`
-	// Env defines environment variables for the bookkeeper statefulset pods
-	Env []v1.EnvVar `json:"env,omitempty"`
 
-	// Labels defines the labels to attach to the bookkeeper deployment
+	// Labels defines the labels to attach to the broker deployment
 	Labels map[string]string `json:"labels,omitempty"`
 
-	// Annotations defines the annotations to attach to the bookkeeper statefulset and services
+	// Annotations defines the annotations to attach to the broker statefulset and services
 	Annotations map[string]string `json:"annotations,omitempty"`
 
 	// ClusterDomain defines the cluster domain for the cluster
@@ -167,8 +166,8 @@ type JVMOptions struct {
 }
 
 type Connector struct {
-	Builtin string                `json:"builtin,omitempty"`
-	Custom  CustomConnectorSource `json:"custom,omitempty"`
+	Builtin []string                `json:"builtin,omitempty"`
+	Custom  []CustomConnectorSource `json:"custom,omitempty"`
 }
 
 type CustomConnectorSource struct {
@@ -270,8 +269,10 @@ func (in *PulsarClusterSpec) setDefaults() (changed bool) {
 		changed = true
 		in.KOP.SecuredPort = defaultKopSSLPort
 	}
-	if in.Connectors == nil {
-		in.Connectors = make([]Connector, 0)
+	if in.Connectors.Builtin == nil {
+		changed = true
+		in.Connectors.Builtin = make([]string, 0)
+		in.Connectors.Custom = make([]CustomConnectorSource, 0)
 	}
 	if in.ProbeConfig == nil {
 		changed = true
