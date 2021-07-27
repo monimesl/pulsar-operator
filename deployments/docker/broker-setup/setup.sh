@@ -3,7 +3,7 @@
 set -e -x
 
 PULSAR_VERSION=${PULSAR_VERSION:-2.8.0}
-PULSAR_CONNECTORS=${PULSAR_CONNECTORS:-""}
+PULSAR_CONNECTORS=${PULSAR_CONNECTORS:-"aerospike"}
 PULSAR_SETUP_DIRECTORY=${PULSAR_SETUP_DIRECTORY:-$(pwd)}
 PULSAR_CONNECTORS_DIRECTORY="$PULSAR_SETUP_DIRECTORY/connectors"
 PULSAR_CONNECTORS_BASE_URL=${PULSAR_CONNECTORS_BASE_URL:-"https://archive.apache.org/dist/pulsar"}
@@ -60,7 +60,12 @@ mkdir -p "$PULSAR_CONNECTORS_DIRECTORY"
 for connector in "${connectors[@]}"; do
   url=$(getConnectorUrl "$connector")
   name=$(getConnectorName "$url")
+
   headers=$(generateCurlHeaders "$connector")
+  if [[ -f "$PULSAR_CONNECTORS_DIRECTORY/$name" ]]; then
+    printf "The connector %s already exists, Skipping...\n" "$name"
+    continue
+  fi
   printf "Downloading the connector: %s from %s\n" "$name" "$url"
   if [[ ! "$headers" == "" ]]; then
     curl "$headers" "$url" -o "$name"
@@ -73,7 +78,7 @@ for connector in "${connectors[@]}"; do
     exit 1
   fi
   printf "Download successful; moving %s to %s\n" "$name" "$PULSAR_CONNECTORS_DIRECTORY"
-  mv "$name" "$PULSAR_SETUP_DIRECTORY"
+  mv "$name" "$PULSAR_CONNECTORS_DIRECTORY"
 done
 
-printf "Connectors downloaded successfully. ✨✨\n"
+printf "Setup is successfully. ✨✨\n"
