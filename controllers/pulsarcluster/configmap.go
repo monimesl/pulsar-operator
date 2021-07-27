@@ -57,6 +57,7 @@ func createConfigMap(cluster *v1alpha1.PulsarCluster) *v1.ConfigMap {
 		"managedLedgerDefaultEnsembleSize": "1",
 		"managedLedgerDefaultWriteQuorum":  "1",
 		"managedLedgerDefaultAckQuorum":    "1",
+		"statusFilePath":                   "/pulsar/status",
 		"clusterName":                      cluster.GetName(),
 		"zookeeperServers":                 cluster.Spec.ZookeeperServers,
 		"bookkeeperMetadataServiceUri":     cluster.Spec.BookkeeperClusterUri,

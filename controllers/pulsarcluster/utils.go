@@ -13,7 +13,7 @@ const (
 )
 
 var notAllowedVariables = addPulsarEnvPrefix([]string{
-	"clusterName", "zookeeperServers",
+	"statusFilePath", "clusterName", "zookeeperServers",
 	"configurationStoreServers", "bookkeeperMetadataServiceUri",
 	"PULSAR_GC", "PULSAR_MEM", "PULSAR_EXTRA_OPTS", "PULSAR_GC_LOG",
 })

@@ -11,11 +11,11 @@ import (
 	v1 "k8s.io/api/apps/v1"
 	v12 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"strings"
 )
 
 const (
-	setupVolume          = "broker-setup"
 	setupVolumeMouthPath = "/broker-setup"
 )
 
@@ -92,16 +92,15 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 		{Name: "PULSAR_SETUP_DIRECTORY", Value: setupVolumeMouthPath},
 	}
 	volumeMounts := []v12.VolumeMount{
-		{Name: setupVolume, MountPath: setupVolumeMouthPath},
+		{Name: c.BrokersSetupPvcName(), MountPath: setupVolumeMouthPath},
 	}
-	image := c.Image()
 	initContainers := []v12.Container{
 		{
 			Name: "broker-setup",
 			Image: fmt.Sprintf("%s:%s",
 				v1alpha1.BrokerSetupImageRepository,
 				v1alpha1.DefaultBrokerSetupImageVersion),
-			ImagePullPolicy: image.PullPolicy,
+			ImagePullPolicy: v1alpha1.DefaultBrokerSetupImagePullPolicy,
 			VolumeMounts:    volumeMounts,
 			Env:             setupEnv,
 		},
@@ -114,10 +113,12 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 		{
 			Name:            "pulsar-broker",
 			Ports:           createContainerPorts(c),
-			Image:           image.ToString(),
-			ImagePullPolicy: image.PullPolicy,
+			Image:           c.Image().ToString(),
+			ImagePullPolicy: c.Image().PullPolicy,
+			StartupProbe:    createStartupProbe(c.Spec),
+			LivenessProbe:   createLivenessProbe(c.Spec),
+			ReadinessProbe:  createReadinessProbe(c.Spec),
 			VolumeMounts:    volumeMounts,
-			Lifecycle:       &v12.Lifecycle{PreStop: createPreStopHandler()},
 			Env:             pod.DecorateContainerEnvVars(true, envs...),
 			EnvFrom: []v12.EnvFromSource{
 				{
@@ -131,6 +132,7 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 			Command: []string{"sh", "-c"},
 			Args: []string{
 				strings.Join([]string{
+					"echo \"yeah\" > status",
 					"rm -rf /pulsar/connectors",
 					"cp -r \"$PULSAR_SETUP_DIRECTORY/connectors\" /pulsar",
 					"bin/apply-config-from-env.py conf/broker.conf",
@@ -141,9 +143,11 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 	}
 	volumes := []v12.Volume{
 		{
-			Name: setupVolume,
+			Name: c.BrokersSetupPvcName(),
 			VolumeSource: v12.VolumeSource{
-				EmptyDir: &v12.EmptyDirVolumeSource{},
+				PersistentVolumeClaim: &v12.PersistentVolumeClaimVolumeSource{
+					ClaimName: c.BrokersSetupPvcName(),
+				},
 			},
 		},
 	}
@@ -194,23 +198,29 @@ func createContainerPorts(c *v1alpha1.PulsarCluster) []v12.ContainerPort {
 	return containerPorts
 }
 
-func createStartupProbe(probe *pod.Probe) *v12.Probe {
-	return probe.ToK8sProbe(v12.Handler{
-		Exec: &v12.ExecAction{Command: []string{"/scripts/probeStartup.sh"}},
-	})
-}
-func createReadinessProbe(probe *pod.Probe) *v12.Probe {
-	return probe.ToK8sProbe(v12.Handler{
-		Exec: &v12.ExecAction{Command: []string{"/scripts/probeReadiness.sh"}},
-	})
-}
-
-func createLivenessProbe(probe *pod.Probe) *v12.Probe {
-	return probe.ToK8sProbe(v12.Handler{
-		Exec: &v12.ExecAction{Command: []string{"/scripts/probeLiveness.sh"}},
+func createStartupProbe(spec v1alpha1.PulsarClusterSpec) *v12.Probe {
+	return spec.ProbeConfig.Startup.ToK8sProbe(v12.Handler{
+		HTTPGet: &v12.HTTPGetAction{
+			Port: intstr.FromInt(int(spec.Ports.Web)),
+			Path: "/status.html",
+		},
 	})
 }
 
-func createPreStopHandler() *v12.Handler {
-	return &v12.Handler{Exec: &v12.ExecAction{Command: []string{"/scripts/stop.sh"}}}
+func createReadinessProbe(spec v1alpha1.PulsarClusterSpec) *v12.Probe {
+	return spec.ProbeConfig.Readiness.ToK8sProbe(v12.Handler{
+		HTTPGet: &v12.HTTPGetAction{
+			Port: intstr.FromInt(int(spec.Ports.Web)),
+			Path: "/status.html",
+		},
+	})
+}
+
+func createLivenessProbe(spec v1alpha1.PulsarClusterSpec) *v12.Probe {
+	return spec.ProbeConfig.Liveness.ToK8sProbe(v12.Handler{
+		HTTPGet: &v12.HTTPGetAction{
+			Port: intstr.FromInt(int(spec.Ports.Web)),
+			Path: "/status.html",
+		},
+	})
 }

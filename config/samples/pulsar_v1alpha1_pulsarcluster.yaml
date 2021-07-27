@@ -7,8 +7,6 @@ spec:
   size: 3
   zookeeperServers: "cluster-1-zk-headless.zookeeper.svc.cluster.local:2181"
   bookkeeperClusterUri: "zk://cluster-1-zk-headless.zookeeper.svc.cluster.local:2181/bookkeeper/cluster-1/ledgers"
-  brokerConfig:
-    managedLedgerDefaultEnsembleSize: "2"
   jvmOptions:
     memory:
       - "-Xms128m"
@@ -16,4 +14,4 @@ spec:
       - "-XX:MaxDirectMemorySize=256m"
   connectors:
     builtin:
-      - "debezium-postgres"
+      - "aerospike"

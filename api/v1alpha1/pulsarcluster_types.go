@@ -119,3 +119,7 @@ func (in *PulsarCluster) Image() basetype.Image {
 		Tag:        in.Spec.PulsarVersion,
 	}
 }
+
+func (in *PulsarCluster) BrokersSetupPvcName() string {
+	return fmt.Sprintf("broker-setup-%s", in.GetName())
+}

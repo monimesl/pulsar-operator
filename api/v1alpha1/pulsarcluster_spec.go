@@ -27,10 +27,11 @@ import (
 )
 
 const (
-	imageRepository                = "apachepulsar/pulsar"
-	BrokerSetupImageRepository     = "monime/pulsar-broker-setup"
-	DefaultBrokerSetupImageVersion = "latest"
-	defaultImageTag                = "2.8.0"
+	imageRepository                   = "apachepulsar/pulsar"
+	BrokerSetupImageRepository        = "monime/pulsar-broker-setup"
+	DefaultBrokerSetupImageVersion    = "latest"
+	DefaultBrokerSetupImagePullPolicy = "Always"
+	defaultImageTag                   = "2.8.0"
 )
 
 const (
