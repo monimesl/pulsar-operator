@@ -1,0 +1,72 @@
+# @formatter:off
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Chart.Name }}-manager-role
+  labels:
+  {{- include "operator.labels" . | nindent 4 }}
+rules:
+  - apiGroups:
+      - pulsar.monime.sl
+    resources:
+      - pulsarclusters
+      - pulsarmanagers
+      - pulsarproxies
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - pulsar.monime.sl
+    resources:
+      - pulsarclusters/status
+      - pulsarmanagers/status
+      - pulsarproxies/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - ""
+      - apps
+      - batch
+      - policy
+      - extensions
+    resources:
+      - jobs
+      - pods
+      - events
+      - secrets
+      - services
+      - configmaps
+      - statefulsets
+      - poddisruptionbudgets
+      - persistentvolumeclaims
+    verbs:
+      - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Chart.Name }}-proxy-role
+rules:
+  - apiGroups: [ "authentication.k8s.io" ]
+    resources:
+      - tokenreviews
+    verbs: [ "create" ]
+  - apiGroups: [ "authorization.k8s.io" ]
+    resources:
+      - subjectaccessreviews
+    verbs: [ "create" ]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Chart.Name }}-metrics-reader
+rules:
+  - nonResourceURLs: [ "/metrics" ]
+    verbs: [ "get" ]
