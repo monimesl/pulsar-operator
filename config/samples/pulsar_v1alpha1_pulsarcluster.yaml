@@ -4,7 +4,7 @@ metadata:
   name: cluster-1
   namespace: pulsar
 spec:
-  size: 3
+  size: 1
   zookeeperServers: "cluster-1-zk-headless.zookeeper.svc.cluster.local:2181"
   bookkeeperClusterUri: "zk://cluster-1-zk-headless.zookeeper.svc.cluster.local:2181/bookkeeper/cluster-1/ledgers"
   jvmOptions:
