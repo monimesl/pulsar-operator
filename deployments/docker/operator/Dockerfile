@@ -29,6 +29,7 @@ RUN go mod download
 # Copy the go source
 COPY main.go main.go
 COPY api api/
+COPY internal internal/
 COPY controllers controllers/
 
 # Run after copying so the files are generated into
