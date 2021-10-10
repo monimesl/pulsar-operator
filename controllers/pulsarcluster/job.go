@@ -131,9 +131,12 @@ func createJobPodContainerArguments(c *v1alpha1.PulsarCluster) []string {
 		fmt.Sprintf("--broker-service-url %s:%d", serviceUrl, c.Spec.Ports.Client),
 		fmt.Sprintf("--broker-service-url-tls %s:%d", serviceUrl, c.Spec.Ports.ClientTLS),
 	}
-	if c.Spec.BookkeeperClusterUri != "" {
+	if c.Spec.BookkeeperClusterUri != "" && c.Spec.VersionInt() >= 270 {
 		args = append(args,
 			fmt.Sprintf("--existing-bk-metadata-service-uri \"%s\"", c.Spec.BookkeeperClusterUri),
+		)
+	} else if c.Spec.BookkeeperClusterUri != "" && c.Spec.VersionInt() >= 262 {
+		args = append(args,
 			//  For compatibility of the command, we're passing the old flag to mean the same thing
 			fmt.Sprintf("--bookkeeper-metadata-service-uri \"%s\"", c.Spec.BookkeeperClusterUri),
 		)

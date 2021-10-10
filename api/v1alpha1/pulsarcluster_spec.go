@@ -23,6 +23,8 @@ import (
 	"github.com/monimesl/operator-helper/operator/prometheus"
 	"github.com/monimesl/pulsar-operator/internal"
 	v1 "k8s.io/api/core/v1"
+	"math"
+	"strconv"
 	"strings"
 )
 
@@ -31,7 +33,7 @@ const (
 	BrokerSetupImageRepository        = "monime/pulsar-broker-setup"
 	DefaultBrokerSetupImageVersion    = "latest"
 	DefaultBrokerSetupImagePullPolicy = "Always"
-	defaultImageTag                   = "2.6.0"
+	defaultImageTag                   = "2.8.0"
 )
 
 const (
@@ -290,6 +292,18 @@ func (in *PulsarClusterSpec) setDefaults() (changed bool) {
 		in.PodConfig.TerminationGracePeriodSeconds = &defaultTerminationGracePeriod
 	}
 	return
+}
+
+func (in *PulsarClusterSpec) VersionInt() int {
+	if in.PulsarVersion == "" || in.PulsarVersion == "latest" {
+		return math.MaxInt32
+	}
+	vsn := strings.ReplaceAll(in.PulsarVersion, ".", "")
+	v, err := strconv.ParseInt(vsn, 10, 64)
+	if err != nil {
+		return math.MaxInt32
+	}
+	return int(v)
 }
 
 func (in *PulsarClusterSpec) createLabels(clusterName string, addPodLabels bool, more map[string]string) map[string]string {
