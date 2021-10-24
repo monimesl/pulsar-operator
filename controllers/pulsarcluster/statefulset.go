@@ -34,8 +34,8 @@ import (
 )
 
 const (
-	brokerSetupPvcSize   = "3Gi"
-	setupVolumeMouthPath = "/broker-setup"
+	brokerSetupPvcSize  = "2Gi"
+	dataVolumeMouthPath = "/data"
 )
 
 // ReconcileStatefulSet reconcile the statefulset of the specified cluster
@@ -109,10 +109,10 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 	setupEnv := []v12.EnvVar{
 		{Name: "PULSAR_VERSION", Value: c.Spec.PulsarVersion},
 		{Name: "PULSAR_CONNECTORS", Value: generateConnectorString(c)},
-		{Name: "PULSAR_SETUP_DIRECTORY", Value: setupVolumeMouthPath},
+		{Name: "PULSAR_SETUP_DIRECTORY", Value: fmt.Sprintf("%s/setup", dataVolumeMouthPath)},
 	}
 	volumeMounts := []v12.VolumeMount{
-		{Name: c.BrokersSetupPvcName(), MountPath: setupVolumeMouthPath},
+		{Name: c.BrokersDataPvcName(), MountPath: dataVolumeMouthPath},
 	}
 	initContainers := []v12.Container{
 		{
@@ -127,7 +127,7 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 	}
 	envs := processEnvVars(c.Spec.Env)
 	envs = append(envs, v12.EnvVar{
-		Name: "PULSAR_SETUP_DIRECTORY", Value: setupVolumeMouthPath,
+		Name: "PULSAR_SETUP_DIRECTORY", Value: dataVolumeMouthPath,
 	})
 	containers := []v12.Container{
 		{
@@ -235,14 +235,14 @@ func createLivenessProbe(spec v1alpha1.PulsarClusterSpec) *v12.Probe {
 
 func createPersistentVolumeClaims(c *v1alpha1.PulsarCluster) []v12.PersistentVolumeClaim {
 	return []v12.PersistentVolumeClaim{
-		pvc.New(c.Namespace, c.BrokersSetupPvcName(),
+		pvc.New(c.Namespace, c.BrokersDataPvcName(),
 			c.CreateLabels(false, nil),
 			v12.PersistentVolumeClaimSpec{
 				Resources: v12.ResourceRequirements{
 					Requests: map[v12.ResourceName]resource.Quantity{
 						v12.ResourceStorage: resource.MustParse(brokerSetupPvcSize),
 					}},
-				AccessModes: []v12.PersistentVolumeAccessMode{v12.ReadWriteMany},
+				AccessModes: []v12.PersistentVolumeAccessMode{v12.ReadWriteOnce},
 			}),
 	}
 }
