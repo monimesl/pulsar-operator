@@ -168,9 +168,7 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 
 func generateConnectorString(c *v1alpha1.PulsarCluster) string {
 	formats := make([]string, 0)
-	for _, connector := range c.Spec.Connectors.Builtin {
-		formats = append(formats, connector)
-	}
+	formats = append(formats, c.Spec.Connectors.Builtin...)
 	for i, connector := range c.Spec.Connectors.Custom {
 		headers := ""
 		for k, v := range connector.Headers {
