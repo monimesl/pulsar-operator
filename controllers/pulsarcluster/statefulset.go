@@ -21,17 +21,20 @@ import (
 	"fmt"
 	"github.com/monimesl/operator-helper/k8s/annotation"
 	"github.com/monimesl/operator-helper/k8s/pod"
+	"github.com/monimesl/operator-helper/k8s/pvc"
 	"github.com/monimesl/operator-helper/k8s/statefulset"
 	"github.com/monimesl/operator-helper/reconciler"
 	"github.com/monimesl/pulsar-operator/api/v1alpha1"
 	v1 "k8s.io/api/apps/v1"
 	v12 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"strings"
 )
 
 const (
+	brokerSetupPvcSize   = "3Gi"
 	setupVolumeMouthPath = "/broker-setup"
 )
 
@@ -79,9 +82,10 @@ func updateStatefulset(ctx reconciler.Context, sts *v1.StatefulSet, cluster *v1a
 }
 
 func createStatefulSet(c *v1alpha1.PulsarCluster) *v1.StatefulSet {
+	pvcs := createPersistentVolumeClaims(c)
 	labels := c.CreateLabels(true, nil)
 	templateSpec := createPodTemplateSpec(c, labels)
-	spec := statefulset.NewSpec(*c.Spec.Size, c.HeadlessServiceName(), labels, nil, templateSpec)
+	spec := statefulset.NewSpec(*c.Spec.Size, c.HeadlessServiceName(), labels, pvcs, templateSpec)
 	sts := statefulset.New(c.Namespace, c.StatefulSetName(), labels, spec)
 	annotations := c.Spec.Annotations
 	if c.Spec.MonitoringConfig.Enabled &&
@@ -157,17 +161,7 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 			},
 		},
 	}
-	volumes := []v12.Volume{
-		{
-			Name: c.BrokersSetupPvcName(),
-			VolumeSource: v12.VolumeSource{
-				PersistentVolumeClaim: &v12.PersistentVolumeClaimVolumeSource{
-					ClaimName: c.BrokersSetupPvcName(),
-				},
-			},
-		},
-	}
-	spec := pod.NewSpec(c.Spec.PodConfig, volumes, initContainers, containers)
+	spec := pod.NewSpec(c.Spec.PodConfig, nil, initContainers, containers)
 	spec.TerminationGracePeriodSeconds = c.Spec.PodConfig.TerminationGracePeriodSeconds
 	return spec
 }
@@ -239,4 +233,18 @@ func createLivenessProbe(spec v1alpha1.PulsarClusterSpec) *v12.Probe {
 			Path: "/status.html",
 		},
 	})
+}
+
+func createPersistentVolumeClaims(c *v1alpha1.PulsarCluster) []v12.PersistentVolumeClaim {
+	return []v12.PersistentVolumeClaim{
+		pvc.New(c.Namespace, c.BrokersSetupPvcName(),
+			c.CreateLabels(false, nil),
+			v12.PersistentVolumeClaimSpec{
+				Resources: v12.ResourceRequirements{
+					Requests: map[v12.ResourceName]resource.Quantity{
+						v12.ResourceStorage: resource.MustParse(brokerSetupPvcSize),
+					}},
+				AccessModes: []v12.PersistentVolumeAccessMode{v12.ReadWriteMany},
+			}),
+	}
 }

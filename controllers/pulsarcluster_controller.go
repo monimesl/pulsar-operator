@@ -35,7 +35,6 @@ var (
 		pulsarcluster.ReconcileServices,
 		pulsarcluster.ReconcileConfigMap,
 		pulsarcluster.ReconcileJob,
-		pulsarcluster.ReconcileSetupPVC,
 		pulsarcluster.ReconcileStatefulSet,
 	}
 )
