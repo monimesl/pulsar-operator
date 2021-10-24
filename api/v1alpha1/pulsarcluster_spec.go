@@ -20,7 +20,6 @@ import (
 	"github.com/monimesl/operator-helper/basetype"
 	"github.com/monimesl/operator-helper/k8s"
 	"github.com/monimesl/operator-helper/k8s/pod"
-	"github.com/monimesl/operator-helper/operator/prometheus"
 	"github.com/monimesl/pulsar-operator/internal"
 	v1 "k8s.io/api/core/v1"
 	"math"
@@ -102,7 +101,7 @@ type PulsarClusterSpec struct {
 	// +optional
 	MaxUnavailableNodes int32  `json:"maxUnavailableNodes"`
 	Ports               *Ports `json:"ports,omitempty"`
-	// BrokerConfig defines the Bookkeeper configurations to override the bk_server.conf
+	// BrokerConfig defines the Bookkeeper configurations to override the broker.conf
 	// +optional
 	BrokerConfig map[string]string `json:"brokerConfig"`
 	// JVMOptions defines the JVM options for pulsar broker; this is useful for performance tuning.
@@ -119,7 +118,7 @@ type PulsarClusterSpec struct {
 	ProbeConfig *pod.Probes `json:"probeConfig,omitempty"`
 	// MonitoringConfig
 	// +optional
-	MonitoringConfig prometheus.MonitoringConfig `json:"monitoringConfig,omitempty"`
+	MonitoringConfig MonitoringConfig `json:"monitoringConfig,omitempty"`
 
 	// Labels defines the labels to attach to the broker deployment
 	Labels map[string]string `json:"labels,omitempty"`
@@ -130,6 +129,11 @@ type PulsarClusterSpec struct {
 	// ClusterDomain defines the cluster domain for the cluster
 	// It defaults to cluster.local
 	ClusterDomain string `json:"clusterDomain,omitempty"`
+}
+
+type MonitoringConfig struct {
+	// Enabled defines whether this monitoring is enabled or not.
+	Enabled bool `json:"enabled,omitempty"`
 }
 
 type Ports struct {
