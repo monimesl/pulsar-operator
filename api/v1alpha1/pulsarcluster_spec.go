@@ -311,19 +311,21 @@ func (in *PulsarClusterSpec) VersionInt() int {
 }
 
 func (in *PulsarClusterSpec) createLabels(clusterName string, addPodLabels bool, more map[string]string) map[string]string {
-	ls := in.Labels
-	if ls == nil {
-		ls = map[string]string{}
+	labels := in.Labels
+	if labels == nil {
+		labels = map[string]string{}
 	}
 	if addPodLabels {
 		for k, v := range in.PodConfig.Labels {
-			ls[k] = v
+			labels[k] = v
 		}
 	}
 	for k, v := range more {
-		ls[k] = v
+		labels[k] = v
 	}
-	ls[k8s.LabelAppManagedBy] = internal.OperatorName
-	ls[k8s.LabelAppName] = clusterName
-	return ls
+	labels[k8s.LabelAppName] = "pulsar"
+	labels[k8s.LabelAppInstance] = clusterName
+	labels[k8s.LabelAppVersion] = in.PulsarVersion
+	labels[k8s.LabelAppManagedBy] = internal.OperatorName
+	return labels
 }
