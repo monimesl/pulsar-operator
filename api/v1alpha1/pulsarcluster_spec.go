@@ -42,8 +42,6 @@ const (
 	WebTLSPortName       = "web-tls-port"
 	KopPlainTextPortName = "kop-plaintext-port"
 	KopSecuredPortName   = "kop-secure-port"
-	MetricsPortName      = "metrics-port"
-	ServiceMetricsPath   = "/metrics"
 )
 
 const (
