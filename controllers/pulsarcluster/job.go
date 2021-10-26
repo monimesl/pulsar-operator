@@ -81,7 +81,7 @@ func reconcileClusterMetadataInitJob(ctx reconciler.Context, cluster *v1alpha1.P
 }
 
 func createClusterMetadataInitJob(c *v1alpha1.PulsarCluster) *v1.Job {
-	labels := c.CreateLabels(false, nil)
+	labels := c.CreateLabels(false, false, nil)
 	return job.New(jobNamespace(c), initializeClusterMetadata(c), labels,
 		v1.JobSpec{
 			Template: coreV1.PodTemplateSpec{

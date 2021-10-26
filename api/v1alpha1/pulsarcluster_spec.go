@@ -308,7 +308,7 @@ func (in *PulsarClusterSpec) VersionInt() int {
 	return int(v)
 }
 
-func (in *PulsarClusterSpec) createLabels(clusterName string, addPodLabels bool, more map[string]string) map[string]string {
+func (in *PulsarClusterSpec) createLabels(clusterName string, broker, addPodLabels bool, more map[string]string) map[string]string {
 	labels := in.Labels
 	if labels == nil {
 		labels = map[string]string{}
@@ -320,6 +320,9 @@ func (in *PulsarClusterSpec) createLabels(clusterName string, addPodLabels bool,
 	}
 	for k, v := range more {
 		labels[k] = v
+	}
+	if broker {
+		labels["broker"] = "true"
 	}
 	labels["app"] = "pulsar"
 	labels["version"] = in.PulsarVersion

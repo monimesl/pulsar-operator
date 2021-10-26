@@ -83,7 +83,7 @@ func updateStatefulset(ctx reconciler.Context, sts *v1.StatefulSet, cluster *v1a
 
 func createStatefulSet(c *v1alpha1.PulsarCluster) *v1.StatefulSet {
 	pvcs := createPersistentVolumeClaims(c)
-	labels := c.CreateLabels(true, nil)
+	labels := c.CreateLabels(true, true, nil)
 	templateSpec := createPodTemplateSpec(c, labels)
 	spec := statefulset.NewSpec(*c.Spec.Size, c.HeadlessServiceName(), labels, pvcs, templateSpec)
 	sts := statefulset.New(c.Namespace, c.StatefulSetName(), labels, spec)
@@ -236,7 +236,7 @@ func createLivenessProbe(spec v1alpha1.PulsarClusterSpec) *v12.Probe {
 func createPersistentVolumeClaims(c *v1alpha1.PulsarCluster) []v12.PersistentVolumeClaim {
 	return []v12.PersistentVolumeClaim{
 		pvc.New(c.Namespace, c.BrokersDataPvcName(),
-			c.CreateLabels(false, nil),
+			c.CreateLabels(false, false, nil),
 			v12.PersistentVolumeClaimSpec{
 				Resources: v12.ResourceRequirements{
 					Requests: map[v12.ResourceName]resource.Quantity{
