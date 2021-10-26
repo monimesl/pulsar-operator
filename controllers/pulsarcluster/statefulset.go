@@ -132,13 +132,14 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 	containers := []v12.Container{
 		{
 			Name:            "pulsar-broker",
+			VolumeMounts:    volumeMounts,
 			Ports:           createContainerPorts(c),
 			Image:           c.Image().ToString(),
 			ImagePullPolicy: c.Image().PullPolicy,
 			StartupProbe:    createStartupProbe(c.Spec),
 			LivenessProbe:   createLivenessProbe(c.Spec),
 			ReadinessProbe:  createReadinessProbe(c.Spec),
-			VolumeMounts:    volumeMounts,
+			Resources:       c.Spec.PodConfig.Resources,
 			Env:             pod.DecorateContainerEnvVars(true, envs...),
 			EnvFrom: []v12.EnvFromSource{
 				{
