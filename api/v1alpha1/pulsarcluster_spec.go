@@ -36,12 +36,12 @@ const (
 )
 
 const (
-	ClientPortName       = "client-port"
-	ClientTLSPortName    = "client-tls-port"
-	WebPortName          = "web-port"
-	WebTLSPortName       = "web-tls-port"
-	KopPlainTextPortName = "kop-plaintext-port"
-	KopSecuredPortName   = "kop-secure-port"
+	ClientPortName       = "tcp-client"
+	ClientTLSPortName    = "tls-client"
+	WebPortName          = "http-web"
+	WebTLSPortName       = "https-web"
+	KopPlainTextPortName = "tcp-kop"
+	KopSecuredPortName   = "tls-kop"
 )
 
 const (
@@ -321,6 +321,8 @@ func (in *PulsarClusterSpec) createLabels(clusterName string, addPodLabels bool,
 	for k, v := range more {
 		labels[k] = v
 	}
+	labels["app"] = "pulsar"
+	labels["version"] = in.PulsarVersion
 	labels[k8s.LabelAppName] = "pulsar"
 	labels[k8s.LabelAppInstance] = clusterName
 	labels[k8s.LabelAppVersion] = in.PulsarVersion
