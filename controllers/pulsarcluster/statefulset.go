@@ -40,6 +40,9 @@ const (
 
 // ReconcileStatefulSet reconcile the statefulset of the specified cluster
 func ReconcileStatefulSet(ctx reconciler.Context, cluster *v1alpha1.PulsarCluster) error {
+	if cluster.Status.Metadata.Stage != v1alpha1.ClusterStageInitialized {
+		return nil
+	}
 	sts := &v1.StatefulSet{}
 	return ctx.GetResource(types.NamespacedName{
 		Name:      cluster.StatefulSetName(),
