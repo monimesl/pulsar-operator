@@ -109,7 +109,7 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 	setupEnv := []v12.EnvVar{
 		{Name: "PULSAR_VERSION", Value: c.Spec.PulsarVersion},
 		{Name: "PULSAR_CONNECTORS", Value: generateConnectorString(c)},
-		{Name: "PULSAR_SETUP_DIRECTORY", Value: fmt.Sprintf("%s/setup", dataVolumeMouthPath)},
+		{Name: "PULSAR_DATA_DIRECTORY", Value: dataVolumeMouthPath},
 	}
 	volumeMounts := []v12.VolumeMount{
 		{Name: c.BrokersDataPvcName(), MountPath: dataVolumeMouthPath},
@@ -127,7 +127,7 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 	}
 	envs := processEnvVars(c.Spec.Env)
 	envs = append(envs, v12.EnvVar{
-		Name: "PULSAR_SETUP_DIRECTORY", Value: dataVolumeMouthPath,
+		Name: "PULSAR_DATA_DIRECTORY", Value: dataVolumeMouthPath,
 	})
 	containers := []v12.Container{
 		{
