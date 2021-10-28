@@ -155,7 +155,7 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 				strings.Join([]string{
 					"echo \"yeah\" > status",
 					"rm -rf /pulsar/connectors",
-					"cp -r \"$PULSAR_SETUP_DIRECTORY/connectors\" /pulsar",
+					"cp -r \"$PULSAR_DATA_DIRECTORY/connectors\" /pulsar",
 					"bin/apply-config-from-env.py conf/broker.conf",
 					"bin/pulsar broker",
 				}, "; "),
