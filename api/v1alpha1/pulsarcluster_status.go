@@ -31,18 +31,6 @@ const (
 // PulsarClusterStatus defines the observed state of PulsarCluster
 type PulsarClusterStatus struct {
 
-	// Replicas is the number of desired broker nodes in the cluster
-	// +optional
-	Replicas int32 `json:"replicas"`
-
-	// CurrentReplicas is the number of current broker nodes in the cluster
-	// +optional
-	CurrentReplicas int32 `json:"currentReplicas"`
-
-	// ReadyReplicas is the number of ready broker nodes in the cluster
-	// +optional
-	ReadyReplicas int32 `json:"readyReplicas"`
-
 	// Metadata defines the metadata status of the cluster
 	// +optional
 	Metadata Metadata `json:"metadata,omitempty"`
@@ -51,7 +39,6 @@ type PulsarClusterStatus struct {
 // Metadata defines the metadata status of the cluster
 type Metadata struct {
 	Stage                 ClusterStage `json:"stage,omitempty"`
-	ServiceMonitorVersion *string      `json:"serviceMonitorVersion,omitempty"`
 }
 
 func (in *PulsarClusterStatus) setDefaults() (changed bool) {

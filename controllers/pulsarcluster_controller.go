@@ -21,6 +21,7 @@ import (
 	"github.com/monimesl/operator-helper/reconciler"
 	"github.com/monimesl/pulsar-operator/controllers/pulsarcluster"
 	v12 "k8s.io/api/apps/v1"
+	v13 "k8s.io/api/batch/v1"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/api/policy/v1beta1"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -53,6 +54,7 @@ func (r *PulsarClusterReconciler) Configure(ctx reconciler.Context) error {
 		Owns(&v12.StatefulSet{}).
 		Owns(&v1.ConfigMap{}).
 		Owns(&v1.Service{}).
+		Owns(&v13.Job{}).
 		Complete(r)
 }
 
