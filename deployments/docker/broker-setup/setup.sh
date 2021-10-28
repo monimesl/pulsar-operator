@@ -19,12 +19,12 @@
 set -e -x
 
 PULSAR_VERSION=${PULSAR_VERSION:-2.8.0}
-PULSAR_CONNECTORS=${PULSAR_CONNECTORS:-"aerospike"}
+PULSAR_CONNECTORS=${PULSAR_CONNECTORS:-""}
 PULSAR_DATA_DIRECTORY=${PULSAR_DATA_DIRECTORY:-$(pwd)}
 PULSAR_CONNECTORS_DIRECTORY="$PULSAR_DATA_DIRECTORY/connectors"
 PULSAR_CONNECTORS_BASE_URL=${PULSAR_CONNECTORS_BASE_URL:-"https://archive.apache.org/dist/pulsar"}
 
-mkdir -p "$PULSAR_SETUP_DIRECTORY"
+mkdir -p "$PULSAR_CONNECTORS_DIRECTORY"
 
 function getFirstPart() {
   local str=$1
@@ -70,8 +70,6 @@ function generateCurlHeaders() {
 }
 
 IFS=' ' read -r -a connectors <<<"$PULSAR_CONNECTORS"
-
-mkdir -p "$PULSAR_CONNECTORS_DIRECTORY"
 
 for connector in "${connectors[@]}"; do
   url=$(getConnectorUrl "$connector")
