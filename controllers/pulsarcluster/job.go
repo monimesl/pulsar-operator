@@ -143,7 +143,7 @@ func createJobPodContainerArguments(c *v1alpha1.PulsarCluster) []string {
 	}
 	args = append(args,
 		// In case we have istio sidecar injected into the Job
-		" && curl -sf -XPOST http://127.0.0.1:15020/quitquitquit",
+		" && curl -sf -X POST http://127.0.0.1:15020/quitquitquit",
 	)
 	return []string{strings.Join(args, " ")}
 }
