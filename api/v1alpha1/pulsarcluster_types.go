@@ -107,8 +107,12 @@ func (in *PulsarCluster) ClientHeadlessServiceFQDN() string {
 	return fmt.Sprintf("%s.%s.svc.%s", in.HeadlessServiceName(), in.Namespace, in.Spec.ClusterDomain)
 }
 
-func (in *PulsarCluster) CreateLabels(broker bool, addPodLabels bool, more map[string]string) map[string]string {
-	return in.Spec.createLabels(in.Name, broker, addPodLabels, more)
+func (in *PulsarCluster) GenerateAnnotations() map[string]string {
+	return in.Spec.createAnnotations()
+}
+
+func (in *PulsarCluster) GenerateLabels(broker bool) map[string]string {
+	return in.Spec.createLabels(in.Name, broker)
 }
 
 // Image specifies the pulsar image to use

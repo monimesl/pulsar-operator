@@ -89,18 +89,18 @@ func createHeadlessService(c *v1alpha1.PulsarCluster) *v1.Service {
 	return createService(c, c.HeadlessServiceName(), false, servicePorts(c))
 }
 
-func createService(c *v1alpha1.PulsarCluster, name string, hasClusterIp bool, servicePorts []v1.ServicePort) *v1.Service {
-	labels := c.CreateLabels(true, false, nil)
-	clusterIp := ""
-	if !hasClusterIp {
-		clusterIp = v1.ClusterIPNone
+func createService(c *v1alpha1.PulsarCluster, name string, hasClusterIP bool, servicePorts []v1.ServicePort) *v1.Service {
+	labels := c.GenerateLabels(true)
+	clusterIP := ""
+	if !hasClusterIP {
+		clusterIP = v1.ClusterIPNone
 	}
 	srv := service.New(c.Namespace, name, labels, v1.ServiceSpec{
-		ClusterIP: clusterIp,
+		ClusterIP: clusterIP,
 		Selector:  labels,
 		Ports:     servicePorts,
 	})
-	srv.Annotations = c.Spec.Annotations
+	srv.Annotations = c.GenerateAnnotations()
 	return srv
 }
 

@@ -19,7 +19,6 @@ package pulsarcluster
 import (
 	"context"
 	"fmt"
-	"github.com/monimesl/operator-helper/k8s/annotation"
 	"github.com/monimesl/operator-helper/k8s/pod"
 	"github.com/monimesl/operator-helper/k8s/pvc"
 	"github.com/monimesl/operator-helper/k8s/statefulset"
@@ -86,26 +85,21 @@ func updateStatefulset(ctx reconciler.Context, sts *v1.StatefulSet, cluster *v1a
 
 func createStatefulSet(c *v1alpha1.PulsarCluster) *v1.StatefulSet {
 	pvcs := createPersistentVolumeClaims(c)
-	labels := c.CreateLabels(true, true, nil)
+	labels := c.GenerateLabels(true)
 	templateSpec := createPodTemplateSpec(c, labels)
 	spec := statefulset.NewSpec(*c.Spec.Size, c.HeadlessServiceName(), labels, pvcs, templateSpec)
 	sts := statefulset.New(c.Namespace, c.StatefulSetName(), labels, spec)
-	annotations := c.Spec.Annotations
-	if c.Spec.MonitoringConfig.Enabled &&
-		(c.Spec.Ports.Web > 0 || c.Spec.Ports.WebTLS > 0) {
-		metricPort := c.Spec.Ports.Web
-		if metricPort <= 0 {
-			metricPort = c.Spec.Ports.WebTLS
-		}
-		annotations = annotation.DecorateForPrometheus(
-			annotations, true, int(metricPort))
-	}
-	sts.Annotations = annotations
+	sts.Annotations = c.GenerateAnnotations()
 	return sts
 }
 
 func createPodTemplateSpec(c *v1alpha1.PulsarCluster, labels map[string]string) v12.PodTemplateSpec {
-	return pod.NewTemplateSpec("", c.StatefulSetName(), labels, nil, createPodSpec(c))
+	return v12.PodTemplateSpec{
+		ObjectMeta: pod.NewMetadata(c.Spec.PodConfig, "",
+			c.StatefulSetName(), labels,
+			c.GenerateAnnotations()),
+		Spec: createPodSpec(c),
+	}
 }
 
 func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
@@ -128,7 +122,7 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 			Env:             setupEnv,
 		},
 	}
-	envs := processEnvVars(c.Spec.Env)
+	envs := processEnvVars(c.Spec.PodConfig.Spec.Env)
 	envs = append(envs, v12.EnvVar{
 		Name: "PULSAR_DATA_DIRECTORY", Value: dataVolumeMouthPath,
 	})
@@ -142,7 +136,7 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 			StartupProbe:    createStartupProbe(c.Spec),
 			LivenessProbe:   createLivenessProbe(c.Spec),
 			ReadinessProbe:  createReadinessProbe(c.Spec),
-			Resources:       c.Spec.PodConfig.Resources,
+			Resources:       c.Spec.PodConfig.Spec.Resources,
 			Env:             pod.DecorateContainerEnvVars(true, envs...),
 			EnvFrom: []v12.EnvFromSource{
 				{
@@ -165,9 +159,7 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 			},
 		},
 	}
-	spec := pod.NewSpec(c.Spec.PodConfig, nil, initContainers, containers)
-	spec.TerminationGracePeriodSeconds = c.Spec.PodConfig.TerminationGracePeriodSeconds
-	return spec
+	return pod.NewSpec(c.Spec.PodConfig, nil, initContainers, containers)
 }
 
 func generateConnectorString(c *v1alpha1.PulsarCluster) string {
@@ -240,7 +232,7 @@ func createLivenessProbe(spec v1alpha1.PulsarClusterSpec) *v12.Probe {
 func createPersistentVolumeClaims(c *v1alpha1.PulsarCluster) []v12.PersistentVolumeClaim {
 	return []v12.PersistentVolumeClaim{
 		pvc.New(c.Namespace, c.BrokersDataPvcName(),
-			c.CreateLabels(false, false, nil),
+			c.GenerateLabels(true),
 			v12.PersistentVolumeClaimSpec{
 				Resources: v12.ResourceRequirements{
 					Requests: map[v12.ResourceName]resource.Quantity{

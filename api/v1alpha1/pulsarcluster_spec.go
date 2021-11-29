@@ -109,14 +109,9 @@ type PulsarClusterSpec struct {
 	// PodConfig defines common configuration for the broker pods
 	// +optional
 	PodConfig basetype.PodConfig `json:"podConfig,omitempty"`
-	// Env defines environment variables for the broker statefulset pods
-	Env []v1.EnvVar `json:"env,omitempty"`
 	// ProbeConfig defines the probing settings for the broker containers
 	// +optional
 	ProbeConfig *pod.Probes `json:"probeConfig,omitempty"`
-	// MonitoringConfig
-	// +optional
-	MonitoringConfig MonitoringConfig `json:"monitoringConfig,omitempty"`
 
 	// Labels defines the labels to attach to the broker deployment
 	Labels map[string]string `json:"labels,omitempty"`
@@ -289,9 +284,9 @@ func (in *PulsarClusterSpec) setDefaults() (changed bool) {
 	if in.JVMOptions.setDefaults() {
 		changed = true
 	}
-	if in.PodConfig.TerminationGracePeriodSeconds == nil {
+	if in.PodConfig.Spec.TerminationGracePeriodSeconds == nil {
 		changed = true
-		in.PodConfig.TerminationGracePeriodSeconds = &defaultTerminationGracePeriod
+		in.PodConfig.Spec.TerminationGracePeriodSeconds = &defaultTerminationGracePeriod
 	}
 	return
 }
@@ -308,18 +303,14 @@ func (in *PulsarClusterSpec) VersionInt() int {
 	return int(v)
 }
 
-func (in *PulsarClusterSpec) createLabels(clusterName string, broker, addPodLabels bool, more map[string]string) map[string]string {
+func (in *PulsarClusterSpec) createAnnotations() map[string]string {
+	return in.Annotations
+}
+
+func (in *PulsarClusterSpec) createLabels(clusterName string, broker bool) map[string]string {
 	labels := in.Labels
 	if labels == nil {
 		labels = map[string]string{}
-	}
-	if addPodLabels {
-		for k, v := range in.PodConfig.Labels {
-			labels[k] = v
-		}
-	}
-	for k, v := range more {
-		labels[k] = v
 	}
 	if broker {
 		labels["broker"] = "true"
