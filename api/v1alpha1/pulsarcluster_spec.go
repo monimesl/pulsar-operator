@@ -32,7 +32,7 @@ const (
 	BrokerSetupImageRepository        = "monime/pulsar-broker-setup"
 	DefaultBrokerSetupImageVersion    = "latest"
 	DefaultBrokerSetupImagePullPolicy = "Always"
-	defaultImageTag                   = "2.8.0"
+	defaultImageTag                   = "2.8.2"
 )
 
 const (

@@ -28,11 +28,12 @@ import (
 	v12 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"strings"
 )
 
 const (
-	brokerSetupPvcSize  = "2Gi"
+	brokerSetupPvcSize  = "10Gi"
 	dataVolumeMouthPath = "/data"
 )
 
@@ -125,10 +126,8 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 	envs = append(envs, v12.EnvVar{
 		Name: "PULSAR_DATA_DIRECTORY", Value: dataVolumeMouthPath,
 	})
-	probeProto := "http"
 	probePort := c.Spec.Ports.Web
 	if probePort <= 0 {
-		probeProto = "https"
 		probePort = c.Spec.Ports.WebTLS
 	}
 	containers := []v12.Container{
@@ -139,9 +138,9 @@ func createPodSpec(c *v1alpha1.PulsarCluster) v12.PodSpec {
 			Image:           c.Image().ToString(),
 			ImagePullPolicy: c.Image().PullPolicy,
 			Resources:       c.Spec.PodConfig.Spec.Resources,
-			StartupProbe:    createStartupProbe(c.Spec, probeProto, probePort),
-			LivenessProbe:   createLivenessProbe(c.Spec, probeProto, probePort),
-			ReadinessProbe:  createReadinessProbe(c.Spec, probeProto, probePort),
+			StartupProbe:    createStartupProbe(c.Spec, probePort),
+			LivenessProbe:   createLivenessProbe(c.Spec, probePort),
+			ReadinessProbe:  createReadinessProbe(c.Spec, probePort),
 			Env:             pod.DecorateContainerEnvVars(true, envs...),
 			EnvFrom: []v12.EnvFromSource{
 				{
@@ -207,32 +206,29 @@ func createContainerPorts(c *v1alpha1.PulsarCluster) []v12.ContainerPort {
 	return containerPorts
 }
 
-func createStartupProbe(spec v1alpha1.PulsarClusterSpec, proto string, port int32) *v12.Probe {
+func createStartupProbe(spec v1alpha1.PulsarClusterSpec, port int32) *v12.Probe {
 	return spec.ProbeConfig.Startup.ToK8sProbe(v12.Handler{
-		Exec: &v12.ExecAction{
-			Command: []string{"curl", "-f",
-				fmt.Sprintf("%s://0.0.0.0:%d/status.html", proto, port),
-			},
+		HTTPGet: &v12.HTTPGetAction{
+			Port: intstr.FromInt(int(port)),
+			Path: "/status.html",
 		},
 	})
 }
 
-func createReadinessProbe(spec v1alpha1.PulsarClusterSpec, proto string, port int32) *v12.Probe {
+func createReadinessProbe(spec v1alpha1.PulsarClusterSpec, port int32) *v12.Probe {
 	return spec.ProbeConfig.Readiness.ToK8sProbe(v12.Handler{
-		Exec: &v12.ExecAction{
-			Command: []string{"curl", "-f",
-				fmt.Sprintf("%s://0.0.0.0:%d/status.html", proto, port),
-			},
+		HTTPGet: &v12.HTTPGetAction{
+			Port: intstr.FromInt(int(port)),
+			Path: "/status.html",
 		},
 	})
 }
 
-func createLivenessProbe(spec v1alpha1.PulsarClusterSpec, proto string, port int32) *v12.Probe {
+func createLivenessProbe(spec v1alpha1.PulsarClusterSpec, port int32) *v12.Probe {
 	return spec.ProbeConfig.Readiness.ToK8sProbe(v12.Handler{
-		Exec: &v12.ExecAction{
-			Command: []string{"curl", "-f",
-				fmt.Sprintf("%s://0.0.0.0:%d/status.html", proto, port),
-			},
+		HTTPGet: &v12.HTTPGetAction{
+			Port: intstr.FromInt(int(port)),
+			Path: "/status.html",
 		},
 	})
 }
