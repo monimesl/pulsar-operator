@@ -142,6 +142,128 @@ spec:
                   is 1.
                 format: int32
                 type: integer
+              persistence:
+                description: PersistentVolumeClaimSpec describes the common attributes
+                  of storage devices and allows a Source for provider-specific attributes
+                properties:
+                  accessModes:
+                    description: 'AccessModes contains the desired access modes the
+                      volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1'
+                    items:
+                      type: string
+                    type: array
+                  dataSource:
+                    description: 'This field can be used to specify either: * An existing
+                      VolumeSnapshot object (snapshot.storage.k8s.io/VolumeSnapshot)
+                      * An existing PVC (PersistentVolumeClaim) * An existing custom
+                      resource that implements data population (Alpha) In order to
+                      use custom resource types that implement data population, the
+                      AnyVolumeDataSource feature gate must be enabled. If the provisioner
+                      or an external controller can support the specified data source,
+                      it will create a new volume based on the contents of the specified
+                      data source.'
+                    properties:
+                      apiGroup:
+                        description: APIGroup is the group for the resource being
+                          referenced. If APIGroup is not specified, the specified
+                          Kind must be in the core API group. For any other third-party
+                          types, APIGroup is required.
+                        type: string
+                      kind:
+                        description: Kind is the type of resource being referenced
+                        type: string
+                      name:
+                        description: Name is the name of resource being referenced
+                        type: string
+                    required:
+                    - kind
+                    - name
+                    type: object
+                  resources:
+                    description: 'Resources represents the minimum resources the volume
+                      should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources'
+                    properties:
+                      limits:
+                        additionalProperties:
+                          anyOf:
+                          - type: integer
+                          - type: string
+                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                          x-kubernetes-int-or-string: true
+                        description: 'Limits describes the maximum amount of compute
+                          resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                        type: object
+                      requests:
+                        additionalProperties:
+                          anyOf:
+                          - type: integer
+                          - type: string
+                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                          x-kubernetes-int-or-string: true
+                        description: 'Requests describes the minimum amount of compute
+                          resources required. If Requests is omitted for a container,
+                          it defaults to Limits if that is explicitly specified, otherwise
+                          to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                        type: object
+                    type: object
+                  selector:
+                    description: A label query over volumes to consider for binding.
+                    properties:
+                      matchExpressions:
+                        description: matchExpressions is a list of label selector
+                          requirements. The requirements are ANDed.
+                        items:
+                          description: A label selector requirement is a selector
+                            that contains values, a key, and an operator that relates
+                            the key and values.
+                          properties:
+                            key:
+                              description: key is the label key that the selector
+                                applies to.
+                              type: string
+                            operator:
+                              description: operator represents a key's relationship
+                                to a set of values. Valid operators are In, NotIn,
+                                Exists and DoesNotExist.
+                              type: string
+                            values:
+                              description: values is an array of string values. If
+                                the operator is In or NotIn, the values array must
+                                be non-empty. If the operator is Exists or DoesNotExist,
+                                the values array must be empty. This array is replaced
+                                during a strategic merge patch.
+                              items:
+                                type: string
+                              type: array
+                          required:
+                          - key
+                          - operator
+                          type: object
+                        type: array
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        description: matchLabels is a map of {key,value} pairs. A
+                          single {key,value} in the matchLabels map is equivalent
+                          to an element of matchExpressions, whose key field is "key",
+                          the operator is "In", and the values array contains only
+                          "value". The requirements are ANDed.
+                        type: object
+                    type: object
+                  storageClassName:
+                    description: 'Name of the StorageClass required by the claim.
+                      More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#class-1'
+                    type: string
+                  volumeMode:
+                    description: volumeMode defines what type of volume is required
+                      by the claim. Value of Filesystem is implied when not included
+                      in claim spec.
+                    type: string
+                  volumeName:
+                    description: VolumeName is the binding reference to the PersistentVolume
+                      backing this claim.
+                    type: string
+                type: object
               podConfig:
                 description: PodConfig defines common configuration for the broker
                   pods
@@ -1718,10 +1840,10 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    helm.sh/chart: pulsar-operator-0.1.1
+    helm.sh/chart: pulsar-operator-0.1.2
     app.kubernetes.io/name: pulsar-operator
     app.kubernetes.io/instance: pulsar-operator
-    app.kubernetes.io/version: "0.1.1"
+    app.kubernetes.io/version: "0.1.2"
     app.kubernetes.io/managed-by: Helm
   name: pulsar-operator
 ---
@@ -1738,14 +1860,14 @@ metadata:
   name: pulsar-operator-pulsar-operator-webhook-secret
   namespace: pulsar-operator
   labels:
-    helm.sh/chart: pulsar-operator-0.1.1
+    helm.sh/chart: pulsar-operator-0.1.2
     app.kubernetes.io/name: pulsar-operator
     app.kubernetes.io/instance: pulsar-operator
-    app.kubernetes.io/version: "0.1.1"
+    app.kubernetes.io/version: "0.1.2"
     app.kubernetes.io/managed-by: Helm
 data:
-  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVCekNDQXUrZ0F3SUJBZ0lSQUpzZitUbzBTRGVIYjdubEh2YWtEOTR3RFFZSktvWklodmNOQVFFTEJRQXcKR1RFWE1CVUdBMVVFQXhNT2QyVmliMjlyTFhKdmIzUXRZMkV3SGhjTk1qSXdPVEUyTVRFMU1ETXdXaGNOTXpJdwpPVEV6TVRFMU1ETXdXakE2TVRnd05nWURWUVFERXk5d2RXeHpZWEl0YjNCbGNtRjBiM0l0Y0hWc2MyRnlMVzl3ClpYSmhkRzl5TFhkbFltaHZiMnN0YzJWeWRtbGpaVENDQVNJd0RRWUpLb1pJaHZjTkFRRUJCUUFEZ2dFUEFEQ0MKQVFvQ2dnRUJBTjk2MTF0STJ6Tlg1Y2MyL2JBTFlLeXVneE12L0U1VkZ5Nys3aWV0MHdzSlNhcjN3ZmlpV2dkNAp5QXFhN0U4MTJQc1M3WnBHa0cvdWpMaWtKMGdYRUUwV0pScE56SmVsWHNiMDJHTWtJSjFaR3UrL3VBY1c1MzJDCjByKytISFFyYTZGZkU4a3VJTDVSQVQzNS9RSzJwSzFIRTJOcFBoMndESWZWZTNONTZxUmk2cGNCZHNvazhPMVIKMGFsRXZGVzFWRDR5bi9ucFlKUU1IOGNxdlBDSTdZdk5oWldMN3ZXZHlhWmhrcVlmSmUzcDNqdHd5Z1orWktaVgpwaEdiQ09XMFd1RGdMZGpSNkFJaW5URExpazFBUitSVlJuTzNETjFTejAzdkw1MU5ubXRVcHplbllVSkdzYUY4Cms2cnplajd5VWxsemdjRjJMYm9CNHN1T2NTRkNmSEVDQXdFQUFhT0NBU2N3Z2dFak1BNEdBMVVkRHdFQi93UUUKQXdJRm9EQWRCZ05WSFNVRUZqQVVCZ2dyQmdFRkJRY0RBUVlJS3dZQkJRVUhBd0l3REFZRFZSMFRBUUgvQkFJdwpBREFmQmdOVkhTTUVHREFXZ0JTMzFLb0dTWGZwSytuenlxS204NkdOS0dWWHVEQ0J3Z1lEVlIwUkJJRzZNSUczCmdpOXdkV3h6WVhJdGIzQmxjbUYwYjNJdGNIVnNjMkZ5TFc5d1pYSmhkRzl5TFhkbFltaHZiMnN0YzJWeWRtbGoKWllJL2NIVnNjMkZ5TFc5d1pYSmhkRzl5TFhCMWJITmhjaTF2Y0dWeVlYUnZjaTEzWldKb2IyOXJMWE5sY25acApZMlV1Y0hWc2MyRnlMVzl3WlhKaGRHOXlna053ZFd4ellYSXRiM0JsY21GMGIzSXRjSFZzYzJGeUxXOXdaWEpoCmRHOXlMWGRsWW1odmIyc3RjMlZ5ZG1salpTNXdkV3h6WVhJdGIzQmxjbUYwYjNJdWMzWmpNQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFBUGZWV2VQRW15MldNVS9yVW0yRURCU3VibHc4L1BRd0dibHNBYmJmZUhqMnh5UHl2Zgo5NytlOGFYYkgrQ05FOXB4UXV5SHAvQ3RHOVVKK0dxV0hENlA0QmlvQzNvY09JTnB2ODNLdkgwbDBKN0NBQjFuCmFVZE1vb0tZUnJaM2JzQnJQMklHSGRMZWdlL3laWkptemNJeGhEQjZJQnloczdubnNqT25iSWxFeTdqSVNCR1IKajRFYzl3RE1HdFR3Vk9BWFQ1MlJLWURlbTAzWXdXcEg5Rm9GY3JVNjZPVXBEYXZMbEVpYUY0dDNpRjVCWndpdApwVTB0UXVCNVR3ZkhubW5IdzdCS0N2S1FlVktBTjhwUUZBQ3JtQWsvS0c2c01MWFJlMDNJQWZHZ2RXcGhMQmZOCkdKT2xtd01YUmtUZzZSZkhMS0xiSUtSY0o3WVhkN1dCR05WZwotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
-  tls.key: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb3dJQkFBS0NBUUVBMzNyWFcwamJNMWZseHpiOXNBdGdySzZERXkvOFRsVVhMdjd1SjYzVEN3bEpxdmZCCitLSmFCM2pJQ3Byc1R6WFkreEx0bWthUWIrNk11S1FuU0JjUVRSWWxHazNNbDZWZXh2VFlZeVFnblZrYTc3KzQKQnhibmZZTFN2NzRjZEN0cm9WOFR5UzRndmxFQlBmbjlBcmFrclVjVFkyaytIYkFNaDlWN2MzbnFwR0xxbHdGMgp5aVR3N1ZIUnFVUzhWYlZVUGpLZitlbGdsQXdmeHlxODhJanRpODJGbFl2dTlaM0pwbUdTcGg4bDdlbmVPM0RLCkJuNWtwbFdtRVpzSTViUmE0T0F0Mk5Ib0FpS2RNTXVLVFVCSDVGVkdjN2NNM1ZMUFRlOHZuVTJlYTFTbk42ZGgKUWtheG9YeVRxdk42UHZKU1dYT0J3WFl0dWdIaXk0NXhJVUo4Y1FJREFRQUJBb0lCQUJDY0tidUFLOEtpS3RMbQp0RzVNT2pBN2ZFU0YwWVBrOFNjdURYZG5oUU1SK3FhNWFYSllac2FkWklqZFFPa1dRSDFReDlZcW5udWpTRlJFCjV5S0ZqRkdlYnIySXdNY1lwSFczSndvZldrazNvVGZta1AvOTVOREFVM2VxNHFTRHdha3B6dWVxQlFjQU1FNXgKOFNzdGRnbm0rWHJ2REkzYVV1UVpxdVpIVG5oUE9pL2s4L0p5T2IyZjVoL21obi9DTzFYbjN2d0gxVllUaHZuZgpuS21JekhrV0dhVFE3NG1ka0p6N2laTDEwU0w4L0I1azVlRmtOZko4dG8wQ3grdGJaZG91SlYyQUlmaStwY3J6Cjl6NzI2UlRIOHpxb09aSExVVjJVR085ZHlob1RIUVhiTWJhaDAzN0dOUmk3UGRyMHhCV0hsck02SmFXclNYTDQKckUzczdqMENnWUVBL2UyTWJTMXV2UDRFMStRQTZwbEIzcjBTS0NWNDdjY1ByNHlhSDZYN2dpYnlTS2R0bnRLYwpNMzZVSTg0TS82QnVnZUxJY2hTczlTZVFEVHJKT0x5TFR2SWduUjFXb3pKaHRHMk9VTlZLNEtNNkQrMFl2VEo1CmZaMVRYaGxEOU5aODhWQjlDNzVrSTRiTCtzdVF1dFc4YlJUQmpmUS90Q1I2VjhIek5JSmVzRDhDZ1lFQTRVMnYKNkpZSExvZUZpZjZmTVd6eXNTWHVjTXJpTm5pa0ZzOWZWMkpXQm5DbXY3R1lsNVYzdUdTbmdzb0VsY2k0SEJwZwp2M2J3QVZxVUk4L0NlSEFLcUlUWklhWE5ZNUF1VFcyallmNHRvc09NYXY5UXgzNXg3dVBoQWZLdXQwNC9xVDBWCk9xc1FPREpBSWx5MndQb3VBcFE2dms4eEVYcjkvM3pvWDlxdnAwOENnWUJPZGNvQUtodWZkZlhWSjNSSkNOWGIKbHh3M0gyMEFPNVBUTUdTbkJzaHg3TXJNUEQrWTVZYXlPcGhYZitGd1V3Z1NSaHFkZFZvRDNoZWFudUZ5RUlBVApBcW1sSWwyVXk0cDVENmo3dlF3SDRTZWRxQ3NPdXJ2alhtdFdGZ1J6Y0pybWpYSTE0THhjWmRnOVJBMFNUZHlNCjcrN21oK1B2SzU1SjQzbmNiYlFJVFFLQmdGdVpyenc3eXYyeTRhc2lGMjBMNDN2OGRQM3NycDRBM0kzZGorREMKUFVGdkNZeUVVd3JHSFIrZDVMRDdHM1FlWUNRazRWTFdzMnVKZlJNMlE5V2RqK2ZGNDFXWHlIS0RTeC8xeEdoeAo0L0g1MlJ3alk1OUlIR0JJeTlGejdtN2VaR21WU1ExS1FWVG5zVVdITmxJdEpRbXRaRmk5YjdDd3RaWHJIYnJpCitXbG5Bb0dCQU5JRTRFcHRtN1VzR2FQek51TVBJcEMwYW9pb1N1SzJiVDkvU3JMR244YU9PUmNOZlZkUTNNM0oKNk5CMkFIRmV5aEhuRVRVSE9rRlpxaE1la0dnYy9RcVpUNUdoZk0wS1hkSzRKNUFidDlwR3NNVDZHRkphQU1uRAoySitmNG5CWFdqejkwbmNmZW5rMmFZT1B2NlBPakpEYlpETFNZR0lSMTNNTlBOYmxrSjUrCi0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
+  tls.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUVCekNDQXUrZ0F3SUJBZ0lSQU4zdE9jUlNRbXlWU2dqTy81N1l5QkV3RFFZSktvWklodmNOQVFFTEJRQXcKR1RFWE1CVUdBMVVFQXhNT2QyVmliMjlyTFhKdmIzUXRZMkV3SGhjTk1qSXhNVEkwTVRNek16RTRXaGNOTXpJeApNVEl4TVRNek16RTRXakE2TVRnd05nWURWUVFERXk5d2RXeHpZWEl0YjNCbGNtRjBiM0l0Y0hWc2MyRnlMVzl3ClpYSmhkRzl5TFhkbFltaHZiMnN0YzJWeWRtbGpaVENDQVNJd0RRWUpLb1pJaHZjTkFRRUJCUUFEZ2dFUEFEQ0MKQVFvQ2dnRUJBTUVZSkRVLzFqVmQ1ZDRQOG5obVFPMUZXQldoakVENDExYWhLcmZtd25FbHBZREkxcFlVckptTgp0Tm83cWJQcmNreVdsVU9mRElJZk84UE5vM2pWRm9zQXJjaDg2S29ua29aWkxsZE9rdVR4L1NTbXlzd2svTjVMCnJEc3hnQk5UdjJvUHNlMmttY0U3SlA1WjJWZnpqYUJLbDRCUFBGeG1wK1dnZFA1WXE2MEI1Nk1rRmtkcnA2b0cKUUJhSG5YV1IrNnBKaU0zZzlXYXE1ZWJZbitrdUF5Tzg0RUdpb0hQVHZDN3BLMkxvdm5VSjcvSDArYVNoVHhoVgpBN0J5Z3U0YlRjbEYxY2JDSFd5S25oQnFmVVFINGdRWmZkZFlXOXB6MjlHSVVzS3dGek4wQzV0bCtmOEo4cEFQCmVHdkpScjJyd3lCMjNsN3E2Nk9HejcrdzlqMVcyMWNDQXdFQUFhT0NBU2N3Z2dFak1BNEdBMVVkRHdFQi93UUUKQXdJRm9EQWRCZ05WSFNVRUZqQVVCZ2dyQmdFRkJRY0RBUVlJS3dZQkJRVUhBd0l3REFZRFZSMFRBUUgvQkFJdwpBREFmQmdOVkhTTUVHREFXZ0JUR3g0U0NrUk8rMjNnVGpudWtQSnN0S2dlVlB6Q0J3Z1lEVlIwUkJJRzZNSUczCmdpOXdkV3h6WVhJdGIzQmxjbUYwYjNJdGNIVnNjMkZ5TFc5d1pYSmhkRzl5TFhkbFltaHZiMnN0YzJWeWRtbGoKWllJL2NIVnNjMkZ5TFc5d1pYSmhkRzl5TFhCMWJITmhjaTF2Y0dWeVlYUnZjaTEzWldKb2IyOXJMWE5sY25acApZMlV1Y0hWc2MyRnlMVzl3WlhKaGRHOXlna053ZFd4ellYSXRiM0JsY21GMGIzSXRjSFZzYzJGeUxXOXdaWEpoCmRHOXlMWGRsWW1odmIyc3RjMlZ5ZG1salpTNXdkV3h6WVhJdGIzQmxjbUYwYjNJdWMzWmpNQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFBMFlxdXhsSzZFdUhwYkdoaDducTRMRnJ4U3c0Z3Yvd0RTUjZDOXhrQTV0R1BFbFlCTQpRcUZISlVXV2lYT3RrUTB2VGpVZTJ5ZGZuV1hRUkpHOTdLVWJSNUEzb25hempDblFWRkF2cUZxcXFpOWJxMVdhCnViazkvbjJYa25tQXhFZnhoVDVJRnZXT0pGL2pNNTd6T0tBUVVHSkxpd29uUW9TZ0ZmVXpwMjdxTVplYzZpTFgKSWErcXBMNlA5SWJ3R1Z3NUdMN1UzcG5hWkh5UUlHQmxkdjlPV29kbkZ6TVBwenc1b0dqR1FPbjBVMzZaNzRZKwp5eWFFbFBXK2FsdVRrR3R6Z25QU1pNeCtoS1NZcXVaRy93NmNZbzJzSE4rcEo2ZGRuVDk4bSs4T1hIbVVrUWd0Clhhc1ZTQllkMGFTQVRRSUpUNUhDOFRRckZSbmlsdXFKazlVRgotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+  tls.key: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb2dJQkFBS0NBUUVBd1Jna05UL1dOVjNsM2cveWVHWkE3VVZZRmFHTVFQalhWcUVxdCtiQ2NTV2xnTWpXCmxoU3NtWTIwMmp1cHMrdHlUSmFWUTU4TWdoODd3ODJqZU5VV2l3Q3R5SHpvcWllU2hsa3VWMDZTNVBIOUpLYksKekNUODNrdXNPekdBRTFPL2FnK3g3YVNad1Rzay9sblpWL09Ob0VxWGdFODhYR2FuNWFCMC9saXJyUUhub3lRVwpSMnVucWdaQUZvZWRkWkg3cWttSXplRDFacXJsNXRpZjZTNERJN3pnUWFLZ2M5TzhMdWtyWXVpK2RRbnY4ZlQ1CnBLRlBHRlVEc0hLQzdodE55VVhWeHNJZGJJcWVFR3A5UkFmaUJCbDkxMWhiMm5QYjBZaFN3ckFYTTNRTG0yWDUKL3dueWtBOTRhOGxHdmF2RElIYmVYdXJybzRiUHY3RDJQVmJiVndJREFRQUJBb0lCQUdJVEovamY1cVlPZmoyTwo3Z0hYTmUwTnhwS2VEZ1hHSG1IQzFGYTUzMUxtNHl3SlZteStMWGlFc0RJVUVicnZ3SXRFQktabTkweDBIci95CkI3RE0wbmxocStMa0JxeStFcjhvTnRCamVWck55bHkrVnN6ZmtJdzc5VXZQZFpUYmVhS2VQQ3BPNjBWcEMvNGcKbHJNRVlvL2lzeGFacURmcWNDYkNuQW0vOGRxWjlJWEhMZHJHb0hFbmJTelVRdnNZcUVtTDhWbEcxTWZjaU9Mbwo3VUV4ZTJOMlNsWml6Y2VMQ2lLcFBXQllCODk3RkdIRFJodS9NN0hQYnY5VE9ZK0ZSMG8rb2ZSSENIODNmYXp2CkVZb2VIdlRTN2lOOG1LOS9LNFl0VE1OTEhvUlBIZnB2Q2ZzaDA2WmdVdVduNXFhSm51Zzk3RW1HcUgrVXVRT28KNFJVT2ZyRUNnWUVBeEtwWXU5U2JSTU54NnlmWWN3Vkx3cVgvTXNjRytET0NKZlQ2RUdUSGRQb0s2dTVjUzRJbQpzSWNldTZWY2E0M0dDZjM3SjVBNktvTlZ1K3NURXFyUlF3YWZab0tERzFKZDFjMkRic1ZtajJpK2lRdmU2NHBzCk95Rk1JaXVoaTBvdGswVGpNTDZGRXhrSHJ1YWh1dUxtVjRCWXR2NzQ0NG5Vb3ZQR25ZcERqeThDZ1lFQSsxbjUKNkd0Q0Q0ejU2R290a0ZCNzJOSHVFbGJkTkExZFhSMnpOdkZOaElUb3dZbm1qdkhPM3lUZWlDOUVhaW50MFVJegpWU1R2Zk4wRS92ci9qMEFuRk9TRlFXWm1qRHVaU0ludGxSYUdIc0d6c3dzOWExUU5tbXIzWjV6Rm5BY1NZdklsCnNlRHl4RkMxT2J3eXc4RThhai80VjZGaXpNK2VHUU5kdVdVaUxGa0NnWUJhbVJyOWxJamUyYWF1TFJIeWt0cisKMVpmRjNaZ2hXU0U0dVMxRnhoZDRsUVBZakd3cVFNL3YvSjgwMUkzSjRtcjhDV3ZkSXYwWXZwNE5UdExmZzUrWgpZQUNvcWJFYU1neVdSUEdxWXZmSFV2cUxpZE5zOEx6QlZLcU5CMHFKTDJmbGN4T3lUZUppRk9MTU9PVUNnaXFZCjNzQi90T0FWZWxaaHB5bTFRNCt4OHdLQmdEcTAwanpweUYwdmRUTkdrV3ZTa0lxY3hiazgxcCtRdTR6REloZWsKRnBIc0pSMEhJM1dobnNyWnBxd3lOZzJCeTQwRHBFK3Z0OHYzSjNLU2wxd1RCTTNKYmlKUFU0WlBhVWJiQ0VXNQpKQXhNKzdiRzJrcVdNRE12NXFjcG83SUVxTk81Y1BweDZ1SFZZKzZmT1ZBbGN3SHgvUVFpcXB2aHBqQjdhOG1nCmlISEpBb0dBS0hxdnR6Rng2Mm9QSmJXSlIyZ2ZpSmJaM2w4VlZlcUVxMmREQUptZlh3U1dxbmphdWRkanIzUXQKRVFnMDN3TkVVZElQSURmUTBwbU1FUG9hNVdZenV2Kzgzd0RiN2d5V3JwK1d5dkU0OEhpSHVUaUNxMlBDR3BhVQpjR0xGU1VmWko5WjJyTGxPUGsrZUo2TzlNVjBTb096UXlrYWRjNWlzbEMzVFBzWEZXbVE9Ci0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg==
 ---
 # Source: pulsar-operator/templates/clusterrole.yaml
 # @formatter:off
@@ -1754,10 +1876,10 @@ kind: ClusterRole
 metadata:
   name: pulsar-operator-manager-role
   labels:
-    helm.sh/chart: pulsar-operator-0.1.1
+    helm.sh/chart: pulsar-operator-0.1.2
     app.kubernetes.io/name: pulsar-operator
     app.kubernetes.io/instance: pulsar-operator
-    app.kubernetes.io/version: "0.1.1"
+    app.kubernetes.io/version: "0.1.2"
     app.kubernetes.io/managed-by: Helm
 rules:
   - apiGroups:
@@ -1834,10 +1956,10 @@ kind: ClusterRoleBinding
 metadata:
   name: pulsar-operator-manager-role-binding
   labels:
-    helm.sh/chart: pulsar-operator-0.1.1
+    helm.sh/chart: pulsar-operator-0.1.2
     app.kubernetes.io/name: pulsar-operator
     app.kubernetes.io/instance: pulsar-operator
-    app.kubernetes.io/version: "0.1.1"
+    app.kubernetes.io/version: "0.1.2"
     app.kubernetes.io/managed-by: Helm
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -1857,10 +1979,10 @@ metadata:
   name: pulsar-operator-leader-election-role
   namespace: pulsar-operator
   labels:
-    helm.sh/chart: pulsar-operator-0.1.1
+    helm.sh/chart: pulsar-operator-0.1.2
     app.kubernetes.io/name: pulsar-operator
     app.kubernetes.io/instance: pulsar-operator
-    app.kubernetes.io/version: "0.1.1"
+    app.kubernetes.io/version: "0.1.2"
     app.kubernetes.io/managed-by: Helm
 rules:
   - apiGroups:
@@ -1903,10 +2025,10 @@ metadata:
   name: pulsar-operator-leader-election-role-binding
   namespace: pulsar-operator
   labels:
-    helm.sh/chart: pulsar-operator-0.1.1
+    helm.sh/chart: pulsar-operator-0.1.2
     app.kubernetes.io/name: pulsar-operator
     app.kubernetes.io/instance: pulsar-operator
-    app.kubernetes.io/version: "0.1.1"
+    app.kubernetes.io/version: "0.1.2"
     app.kubernetes.io/managed-by: Helm
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -1925,10 +2047,10 @@ metadata:
   name: pulsar-operator-pulsar-operator-webhook-service
   namespace: pulsar-operator
   labels:
-    helm.sh/chart: pulsar-operator-0.1.1
+    helm.sh/chart: pulsar-operator-0.1.2
     app.kubernetes.io/name: pulsar-operator
     app.kubernetes.io/instance: pulsar-operator
-    app.kubernetes.io/version: "0.1.1"
+    app.kubernetes.io/version: "0.1.2"
     app.kubernetes.io/managed-by: Helm
 spec:
   ports:
@@ -1945,10 +2067,10 @@ metadata:
   name: pulsar-operator-controller-manager-metrics-service
   namespace: pulsar-operator
   labels:
-    helm.sh/chart: pulsar-operator-0.1.1
+    helm.sh/chart: pulsar-operator-0.1.2
     app.kubernetes.io/name: pulsar-operator
     app.kubernetes.io/instance: pulsar-operator
-    app.kubernetes.io/version: "0.1.1"
+    app.kubernetes.io/version: "0.1.2"
     app.kubernetes.io/managed-by: Helm
 spec:
   ports:
@@ -1968,10 +2090,10 @@ metadata:
   name: pulsar-operator
   namespace: pulsar-operator
   labels:
-    helm.sh/chart: pulsar-operator-0.1.1
+    helm.sh/chart: pulsar-operator-0.1.2
     app.kubernetes.io/name: pulsar-operator
     app.kubernetes.io/instance: pulsar-operator
-    app.kubernetes.io/version: "0.1.1"
+    app.kubernetes.io/version: "0.1.2"
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
@@ -1987,7 +2109,7 @@ spec:
     spec:
       containers:
         - name: pulsar-operator
-          image: monime/pulsar-operator:v0.1.1
+          image: monime/pulsar-operator:v0.1.2
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -2020,7 +2142,7 @@ webhooks:
   - v1
   - v1beta1
   clientConfig:
-    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURIVENDQWdXZ0F3SUJBZ0lRSitueHpuck9pMEYrbG1ZbFlhazFPVEFOQmdrcWhraUc5dzBCQVFzRkFEQVoKTVJjd0ZRWURWUVFERXc1M1pXSnZiMnN0Y205dmRDMWpZVEFlRncweU1qQTVNVFl4TVRVd01qbGFGdzB6TWpBNQpNVE14TVRVd01qbGFNQmt4RnpBVkJnTlZCQU1URG5kbFltOXZheTF5YjI5MExXTmhNSUlCSWpBTkJna3Foa2lHCjl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUEwemV5STVpTDJ1Nlg3dmNVbHRPajhaQitvdUZhUXptT0NsMWIKL21oazVYY2RJMXdKeVVaZ2FNTFBuSFd0REV1ZjN4eWYvS1N3NG1kWTdCWHVQdUpNQXdvaVFhRmZtejEyakZkSgp4WGhWV2NQTEJHZTVQQWY0eEx1V3ovNWlQMWxvb2R5RjdCbXpUQmc5TU43N2h5bTFvWVBjWE5va3RQelZwQml2Ck9TaXNmMm9rYTVFYjNNalh1SlpLbmkrSE42SThtbGdLUERVWnBKK05uNjVnRC9QdjNvQzBWODhabVhhbHVaaGsKVHlvV2JHNzlyaEVoYWRBV21ISkZYMzkxdHZLbFpKU1JaRlFNd1c2NmxHRTRzTWw2dXFseTFIeWUyTXpuRXFMSApkdExwSXZkTlU4dHNyWkhQWktJMThvTTA5V3ZJMC9rbkZOZlRQUkM4OFcrdmJTd3JoUUlEQVFBQm8yRXdYekFPCkJnTlZIUThCQWY4RUJBTUNBcVF3SFFZRFZSMGxCQll3RkFZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ01BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGTGZVcWdaSmQra3I2ZlBLb3Fiem9ZMG9aVmU0TUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQkFRQTVnNFlNMGE5d3k1dkxGUWJ5b1ZhcWYwREFFS1BzWHlpRGQxNk1adXZqCkZuMHVoVURiUXYxMGl5TUdZUEVnUmFyTmNtMXRDTFl6ZnBnQWRpWWpCUmROMTQzY0RFZUJGNXB4YklwV1FEQnMKRGwzeFNscm8xZzZxMjBrakxXMFB0Njk2Ri9PNHl2dm8vT1hTcHA5M05KbmpDbkxDS3Rsam91cTFySmZJc2diVgpDRm1iZTNNZHhhSW5YOVpZWVh4a0MxZ0Y4VzZBVjJzNXd6dXJSeFJNVDY2Zk5CQW1DT2s1T1BKNzYwVW44Y3BICjl5RkdoMnpCeWVEWFB0bEVEOS94Nkp2aXVCT2k0d3M4dHg0L0t3eStxSzl5M1NkQWFpN1NQRTMzY0daYUV4bi8KaDM5NnFYQXQ5c3V6QnZZWkdZeTNoQlVrMDYyL2pTSkpnMnJpRzZFenRJUG0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURIVENDQWdXZ0F3SUJBZ0lRRmNObUxISzVoNGdEMUFiTFRwK3VrekFOQmdrcWhraUc5dzBCQVFzRkFEQVoKTVJjd0ZRWURWUVFERXc1M1pXSnZiMnN0Y205dmRDMWpZVEFlRncweU1qRXhNalF4TXpNek1UaGFGdzB6TWpFeApNakV4TXpNek1UaGFNQmt4RnpBVkJnTlZCQU1URG5kbFltOXZheTF5YjI5MExXTmhNSUlCSWpBTkJna3Foa2lHCjl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFva1hsaEJkd2pPYmNheU5pVkU5SDUxK0Z6V3JYME1VMDZWdTYKNk5MYmJQSSszUi9DM3FjUUVXbHlFK3VNMEJyL0w0WHlZR0V6RGJRWDdqdXErc05uZTdFditXTFI0aytsc29sUgorSkNCbjJmcnRMdE1qMVRWcGVESmp3UjBpVDA3SGFraVV5WCs5STRpMERPZXhJNW51U1hOK09ZVzEzeUdJbFVpCnhhMVpCRHpNMVNEOUZuZ2VCM1p3bnI1MEtaWXV6NHpJU0RQZjhnazNyc3ZMbW9CSFZkdUtzTHh4TGIyOGVmU2gKcEFBVkdyUkZzWE10MWg1QXgzY29hYTZodG0vS3JiNU5pV0xqekNxdTZXcmlqMnVrR3pnUTZ6dEtybnlxQlNDZApJaUROSWtZSWhhNlJVR3k3Wk1oTDlXN2pEeHFrQ2prRGxLcjRDZkxkaGx1a3VrVHJRd0lEQVFBQm8yRXdYekFPCkJnTlZIUThCQWY4RUJBTUNBcVF3SFFZRFZSMGxCQll3RkFZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ01BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGTWJIaElLUkU3N2JlQk9PZTZROG15MHFCNVUvTUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQkFRQW9pQklvb2JORjF0ZXNGcHJpdXpiK1l3TGZVeEUvQjUwNklaRHFnVW1YCmNwdHhzS3dxaEZtY0kzZ1dpbXRPZUZ6MGZ5TmppTlhOZXJISmh2M0hmdTdzZHI1cy84TjNPdG03WFlnVU1MNnAKbjJXNFlnWE5vUUpQeC9LZVBIdHZYZHhPK0V3a1EvK0xUMkdINytLUDlxMU9sTU5jb29IRTlIc0ZlQkZZVFk5OAp0eHo0ZTFzTXdkVW4yWVpRampUWS9KaVlTa1czeXNwL20wY29oMTNMODZvRUVrSkF5UVpBQ3h0akQrVzd0bkViCkNPblN0THhQWEVGN1BLWFRicEc5M1VDUEJQdXpvb3JYblJmM3ZVcmt5Yk1oN0VBdmxvRVBMQnhtQmZzQWFBU3kKeDUvTmEvWDRLQ3p6VHZzNGcrd3FBMXVSSytNREo0Zklod0ZJU2FOZW5BSjgKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
     service:
       name: pulsar-operator-pulsar-operator-webhook-service
       namespace: pulsar-operator
@@ -2042,7 +2164,7 @@ webhooks:
   - v1
   - v1beta1
   clientConfig:
-    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURIVENDQWdXZ0F3SUJBZ0lRSitueHpuck9pMEYrbG1ZbFlhazFPVEFOQmdrcWhraUc5dzBCQVFzRkFEQVoKTVJjd0ZRWURWUVFERXc1M1pXSnZiMnN0Y205dmRDMWpZVEFlRncweU1qQTVNVFl4TVRVd01qbGFGdzB6TWpBNQpNVE14TVRVd01qbGFNQmt4RnpBVkJnTlZCQU1URG5kbFltOXZheTF5YjI5MExXTmhNSUlCSWpBTkJna3Foa2lHCjl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUEwemV5STVpTDJ1Nlg3dmNVbHRPajhaQitvdUZhUXptT0NsMWIKL21oazVYY2RJMXdKeVVaZ2FNTFBuSFd0REV1ZjN4eWYvS1N3NG1kWTdCWHVQdUpNQXdvaVFhRmZtejEyakZkSgp4WGhWV2NQTEJHZTVQQWY0eEx1V3ovNWlQMWxvb2R5RjdCbXpUQmc5TU43N2h5bTFvWVBjWE5va3RQelZwQml2Ck9TaXNmMm9rYTVFYjNNalh1SlpLbmkrSE42SThtbGdLUERVWnBKK05uNjVnRC9QdjNvQzBWODhabVhhbHVaaGsKVHlvV2JHNzlyaEVoYWRBV21ISkZYMzkxdHZLbFpKU1JaRlFNd1c2NmxHRTRzTWw2dXFseTFIeWUyTXpuRXFMSApkdExwSXZkTlU4dHNyWkhQWktJMThvTTA5V3ZJMC9rbkZOZlRQUkM4OFcrdmJTd3JoUUlEQVFBQm8yRXdYekFPCkJnTlZIUThCQWY4RUJBTUNBcVF3SFFZRFZSMGxCQll3RkFZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ01BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGTGZVcWdaSmQra3I2ZlBLb3Fiem9ZMG9aVmU0TUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQkFRQTVnNFlNMGE5d3k1dkxGUWJ5b1ZhcWYwREFFS1BzWHlpRGQxNk1adXZqCkZuMHVoVURiUXYxMGl5TUdZUEVnUmFyTmNtMXRDTFl6ZnBnQWRpWWpCUmROMTQzY0RFZUJGNXB4YklwV1FEQnMKRGwzeFNscm8xZzZxMjBrakxXMFB0Njk2Ri9PNHl2dm8vT1hTcHA5M05KbmpDbkxDS3Rsam91cTFySmZJc2diVgpDRm1iZTNNZHhhSW5YOVpZWVh4a0MxZ0Y4VzZBVjJzNXd6dXJSeFJNVDY2Zk5CQW1DT2s1T1BKNzYwVW44Y3BICjl5RkdoMnpCeWVEWFB0bEVEOS94Nkp2aXVCT2k0d3M4dHg0L0t3eStxSzl5M1NkQWFpN1NQRTMzY0daYUV4bi8KaDM5NnFYQXQ5c3V6QnZZWkdZeTNoQlVrMDYyL2pTSkpnMnJpRzZFenRJUG0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURIVENDQWdXZ0F3SUJBZ0lRRmNObUxISzVoNGdEMUFiTFRwK3VrekFOQmdrcWhraUc5dzBCQVFzRkFEQVoKTVJjd0ZRWURWUVFERXc1M1pXSnZiMnN0Y205dmRDMWpZVEFlRncweU1qRXhNalF4TXpNek1UaGFGdzB6TWpFeApNakV4TXpNek1UaGFNQmt4RnpBVkJnTlZCQU1URG5kbFltOXZheTF5YjI5MExXTmhNSUlCSWpBTkJna3Foa2lHCjl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFva1hsaEJkd2pPYmNheU5pVkU5SDUxK0Z6V3JYME1VMDZWdTYKNk5MYmJQSSszUi9DM3FjUUVXbHlFK3VNMEJyL0w0WHlZR0V6RGJRWDdqdXErc05uZTdFditXTFI0aytsc29sUgorSkNCbjJmcnRMdE1qMVRWcGVESmp3UjBpVDA3SGFraVV5WCs5STRpMERPZXhJNW51U1hOK09ZVzEzeUdJbFVpCnhhMVpCRHpNMVNEOUZuZ2VCM1p3bnI1MEtaWXV6NHpJU0RQZjhnazNyc3ZMbW9CSFZkdUtzTHh4TGIyOGVmU2gKcEFBVkdyUkZzWE10MWg1QXgzY29hYTZodG0vS3JiNU5pV0xqekNxdTZXcmlqMnVrR3pnUTZ6dEtybnlxQlNDZApJaUROSWtZSWhhNlJVR3k3Wk1oTDlXN2pEeHFrQ2prRGxLcjRDZkxkaGx1a3VrVHJRd0lEQVFBQm8yRXdYekFPCkJnTlZIUThCQWY4RUJBTUNBcVF3SFFZRFZSMGxCQll3RkFZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ01BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGTWJIaElLUkU3N2JlQk9PZTZROG15MHFCNVUvTUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQkFRQW9pQklvb2JORjF0ZXNGcHJpdXpiK1l3TGZVeEUvQjUwNklaRHFnVW1YCmNwdHhzS3dxaEZtY0kzZ1dpbXRPZUZ6MGZ5TmppTlhOZXJISmh2M0hmdTdzZHI1cy84TjNPdG03WFlnVU1MNnAKbjJXNFlnWE5vUUpQeC9LZVBIdHZYZHhPK0V3a1EvK0xUMkdINytLUDlxMU9sTU5jb29IRTlIc0ZlQkZZVFk5OAp0eHo0ZTFzTXdkVW4yWVpRampUWS9KaVlTa1czeXNwL20wY29oMTNMODZvRUVrSkF5UVpBQ3h0akQrVzd0bkViCkNPblN0THhQWEVGN1BLWFRicEc5M1VDUEJQdXpvb3JYblJmM3ZVcmt5Yk1oN0VBdmxvRVBMQnhtQmZzQWFBU3kKeDUvTmEvWDRLQ3p6VHZzNGcrd3FBMXVSSytNREo0Zklod0ZJU2FOZW5BSjgKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
     service:
       name: pulsar-operator-pulsar-operator-webhook-service
       namespace: pulsar-operator
@@ -2064,7 +2186,7 @@ webhooks:
   - v1
   - v1beta1
   clientConfig:
-    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURIVENDQWdXZ0F3SUJBZ0lRSitueHpuck9pMEYrbG1ZbFlhazFPVEFOQmdrcWhraUc5dzBCQVFzRkFEQVoKTVJjd0ZRWURWUVFERXc1M1pXSnZiMnN0Y205dmRDMWpZVEFlRncweU1qQTVNVFl4TVRVd01qbGFGdzB6TWpBNQpNVE14TVRVd01qbGFNQmt4RnpBVkJnTlZCQU1URG5kbFltOXZheTF5YjI5MExXTmhNSUlCSWpBTkJna3Foa2lHCjl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUEwemV5STVpTDJ1Nlg3dmNVbHRPajhaQitvdUZhUXptT0NsMWIKL21oazVYY2RJMXdKeVVaZ2FNTFBuSFd0REV1ZjN4eWYvS1N3NG1kWTdCWHVQdUpNQXdvaVFhRmZtejEyakZkSgp4WGhWV2NQTEJHZTVQQWY0eEx1V3ovNWlQMWxvb2R5RjdCbXpUQmc5TU43N2h5bTFvWVBjWE5va3RQelZwQml2Ck9TaXNmMm9rYTVFYjNNalh1SlpLbmkrSE42SThtbGdLUERVWnBKK05uNjVnRC9QdjNvQzBWODhabVhhbHVaaGsKVHlvV2JHNzlyaEVoYWRBV21ISkZYMzkxdHZLbFpKU1JaRlFNd1c2NmxHRTRzTWw2dXFseTFIeWUyTXpuRXFMSApkdExwSXZkTlU4dHNyWkhQWktJMThvTTA5V3ZJMC9rbkZOZlRQUkM4OFcrdmJTd3JoUUlEQVFBQm8yRXdYekFPCkJnTlZIUThCQWY4RUJBTUNBcVF3SFFZRFZSMGxCQll3RkFZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ01BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGTGZVcWdaSmQra3I2ZlBLb3Fiem9ZMG9aVmU0TUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQkFRQTVnNFlNMGE5d3k1dkxGUWJ5b1ZhcWYwREFFS1BzWHlpRGQxNk1adXZqCkZuMHVoVURiUXYxMGl5TUdZUEVnUmFyTmNtMXRDTFl6ZnBnQWRpWWpCUmROMTQzY0RFZUJGNXB4YklwV1FEQnMKRGwzeFNscm8xZzZxMjBrakxXMFB0Njk2Ri9PNHl2dm8vT1hTcHA5M05KbmpDbkxDS3Rsam91cTFySmZJc2diVgpDRm1iZTNNZHhhSW5YOVpZWVh4a0MxZ0Y4VzZBVjJzNXd6dXJSeFJNVDY2Zk5CQW1DT2s1T1BKNzYwVW44Y3BICjl5RkdoMnpCeWVEWFB0bEVEOS94Nkp2aXVCT2k0d3M4dHg0L0t3eStxSzl5M1NkQWFpN1NQRTMzY0daYUV4bi8KaDM5NnFYQXQ5c3V6QnZZWkdZeTNoQlVrMDYyL2pTSkpnMnJpRzZFenRJUG0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURIVENDQWdXZ0F3SUJBZ0lRRmNObUxISzVoNGdEMUFiTFRwK3VrekFOQmdrcWhraUc5dzBCQVFzRkFEQVoKTVJjd0ZRWURWUVFERXc1M1pXSnZiMnN0Y205dmRDMWpZVEFlRncweU1qRXhNalF4TXpNek1UaGFGdzB6TWpFeApNakV4TXpNek1UaGFNQmt4RnpBVkJnTlZCQU1URG5kbFltOXZheTF5YjI5MExXTmhNSUlCSWpBTkJna3Foa2lHCjl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFva1hsaEJkd2pPYmNheU5pVkU5SDUxK0Z6V3JYME1VMDZWdTYKNk5MYmJQSSszUi9DM3FjUUVXbHlFK3VNMEJyL0w0WHlZR0V6RGJRWDdqdXErc05uZTdFditXTFI0aytsc29sUgorSkNCbjJmcnRMdE1qMVRWcGVESmp3UjBpVDA3SGFraVV5WCs5STRpMERPZXhJNW51U1hOK09ZVzEzeUdJbFVpCnhhMVpCRHpNMVNEOUZuZ2VCM1p3bnI1MEtaWXV6NHpJU0RQZjhnazNyc3ZMbW9CSFZkdUtzTHh4TGIyOGVmU2gKcEFBVkdyUkZzWE10MWg1QXgzY29hYTZodG0vS3JiNU5pV0xqekNxdTZXcmlqMnVrR3pnUTZ6dEtybnlxQlNDZApJaUROSWtZSWhhNlJVR3k3Wk1oTDlXN2pEeHFrQ2prRGxLcjRDZkxkaGx1a3VrVHJRd0lEQVFBQm8yRXdYekFPCkJnTlZIUThCQWY4RUJBTUNBcVF3SFFZRFZSMGxCQll3RkFZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ01BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGTWJIaElLUkU3N2JlQk9PZTZROG15MHFCNVUvTUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQkFRQW9pQklvb2JORjF0ZXNGcHJpdXpiK1l3TGZVeEUvQjUwNklaRHFnVW1YCmNwdHhzS3dxaEZtY0kzZ1dpbXRPZUZ6MGZ5TmppTlhOZXJISmh2M0hmdTdzZHI1cy84TjNPdG03WFlnVU1MNnAKbjJXNFlnWE5vUUpQeC9LZVBIdHZYZHhPK0V3a1EvK0xUMkdINytLUDlxMU9sTU5jb29IRTlIc0ZlQkZZVFk5OAp0eHo0ZTFzTXdkVW4yWVpRampUWS9KaVlTa1czeXNwL20wY29oMTNMODZvRUVrSkF5UVpBQ3h0akQrVzd0bkViCkNPblN0THhQWEVGN1BLWFRicEc5M1VDUEJQdXpvb3JYblJmM3ZVcmt5Yk1oN0VBdmxvRVBMQnhtQmZzQWFBU3kKeDUvTmEvWDRLQ3p6VHZzNGcrd3FBMXVSSytNREo0Zklod0ZJU2FOZW5BSjgKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
     service:
       name: pulsar-operator-pulsar-operator-webhook-service
       namespace: pulsar-operator
@@ -2094,7 +2216,7 @@ webhooks:
   - v1
   - v1beta1
   clientConfig:
-    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURIVENDQWdXZ0F3SUJBZ0lRSitueHpuck9pMEYrbG1ZbFlhazFPVEFOQmdrcWhraUc5dzBCQVFzRkFEQVoKTVJjd0ZRWURWUVFERXc1M1pXSnZiMnN0Y205dmRDMWpZVEFlRncweU1qQTVNVFl4TVRVd01qbGFGdzB6TWpBNQpNVE14TVRVd01qbGFNQmt4RnpBVkJnTlZCQU1URG5kbFltOXZheTF5YjI5MExXTmhNSUlCSWpBTkJna3Foa2lHCjl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUEwemV5STVpTDJ1Nlg3dmNVbHRPajhaQitvdUZhUXptT0NsMWIKL21oazVYY2RJMXdKeVVaZ2FNTFBuSFd0REV1ZjN4eWYvS1N3NG1kWTdCWHVQdUpNQXdvaVFhRmZtejEyakZkSgp4WGhWV2NQTEJHZTVQQWY0eEx1V3ovNWlQMWxvb2R5RjdCbXpUQmc5TU43N2h5bTFvWVBjWE5va3RQelZwQml2Ck9TaXNmMm9rYTVFYjNNalh1SlpLbmkrSE42SThtbGdLUERVWnBKK05uNjVnRC9QdjNvQzBWODhabVhhbHVaaGsKVHlvV2JHNzlyaEVoYWRBV21ISkZYMzkxdHZLbFpKU1JaRlFNd1c2NmxHRTRzTWw2dXFseTFIeWUyTXpuRXFMSApkdExwSXZkTlU4dHNyWkhQWktJMThvTTA5V3ZJMC9rbkZOZlRQUkM4OFcrdmJTd3JoUUlEQVFBQm8yRXdYekFPCkJnTlZIUThCQWY4RUJBTUNBcVF3SFFZRFZSMGxCQll3RkFZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ01BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGTGZVcWdaSmQra3I2ZlBLb3Fiem9ZMG9aVmU0TUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQkFRQTVnNFlNMGE5d3k1dkxGUWJ5b1ZhcWYwREFFS1BzWHlpRGQxNk1adXZqCkZuMHVoVURiUXYxMGl5TUdZUEVnUmFyTmNtMXRDTFl6ZnBnQWRpWWpCUmROMTQzY0RFZUJGNXB4YklwV1FEQnMKRGwzeFNscm8xZzZxMjBrakxXMFB0Njk2Ri9PNHl2dm8vT1hTcHA5M05KbmpDbkxDS3Rsam91cTFySmZJc2diVgpDRm1iZTNNZHhhSW5YOVpZWVh4a0MxZ0Y4VzZBVjJzNXd6dXJSeFJNVDY2Zk5CQW1DT2s1T1BKNzYwVW44Y3BICjl5RkdoMnpCeWVEWFB0bEVEOS94Nkp2aXVCT2k0d3M4dHg0L0t3eStxSzl5M1NkQWFpN1NQRTMzY0daYUV4bi8KaDM5NnFYQXQ5c3V6QnZZWkdZeTNoQlVrMDYyL2pTSkpnMnJpRzZFenRJUG0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURIVENDQWdXZ0F3SUJBZ0lRRmNObUxISzVoNGdEMUFiTFRwK3VrekFOQmdrcWhraUc5dzBCQVFzRkFEQVoKTVJjd0ZRWURWUVFERXc1M1pXSnZiMnN0Y205dmRDMWpZVEFlRncweU1qRXhNalF4TXpNek1UaGFGdzB6TWpFeApNakV4TXpNek1UaGFNQmt4RnpBVkJnTlZCQU1URG5kbFltOXZheTF5YjI5MExXTmhNSUlCSWpBTkJna3Foa2lHCjl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFva1hsaEJkd2pPYmNheU5pVkU5SDUxK0Z6V3JYME1VMDZWdTYKNk5MYmJQSSszUi9DM3FjUUVXbHlFK3VNMEJyL0w0WHlZR0V6RGJRWDdqdXErc05uZTdFditXTFI0aytsc29sUgorSkNCbjJmcnRMdE1qMVRWcGVESmp3UjBpVDA3SGFraVV5WCs5STRpMERPZXhJNW51U1hOK09ZVzEzeUdJbFVpCnhhMVpCRHpNMVNEOUZuZ2VCM1p3bnI1MEtaWXV6NHpJU0RQZjhnazNyc3ZMbW9CSFZkdUtzTHh4TGIyOGVmU2gKcEFBVkdyUkZzWE10MWg1QXgzY29hYTZodG0vS3JiNU5pV0xqekNxdTZXcmlqMnVrR3pnUTZ6dEtybnlxQlNDZApJaUROSWtZSWhhNlJVR3k3Wk1oTDlXN2pEeHFrQ2prRGxLcjRDZkxkaGx1a3VrVHJRd0lEQVFBQm8yRXdYekFPCkJnTlZIUThCQWY4RUJBTUNBcVF3SFFZRFZSMGxCQll3RkFZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ01BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGTWJIaElLUkU3N2JlQk9PZTZROG15MHFCNVUvTUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQkFRQW9pQklvb2JORjF0ZXNGcHJpdXpiK1l3TGZVeEUvQjUwNklaRHFnVW1YCmNwdHhzS3dxaEZtY0kzZ1dpbXRPZUZ6MGZ5TmppTlhOZXJISmh2M0hmdTdzZHI1cy84TjNPdG03WFlnVU1MNnAKbjJXNFlnWE5vUUpQeC9LZVBIdHZYZHhPK0V3a1EvK0xUMkdINytLUDlxMU9sTU5jb29IRTlIc0ZlQkZZVFk5OAp0eHo0ZTFzTXdkVW4yWVpRampUWS9KaVlTa1czeXNwL20wY29oMTNMODZvRUVrSkF5UVpBQ3h0akQrVzd0bkViCkNPblN0THhQWEVGN1BLWFRicEc5M1VDUEJQdXpvb3JYblJmM3ZVcmt5Yk1oN0VBdmxvRVBMQnhtQmZzQWFBU3kKeDUvTmEvWDRLQ3p6VHZzNGcrd3FBMXVSSytNREo0Zklod0ZJU2FOZW5BSjgKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
     service:
       name: pulsar-operator-pulsar-operator-webhook-service
       namespace: pulsar-operator
@@ -2116,7 +2238,7 @@ webhooks:
   - v1
   - v1beta1
   clientConfig:
-    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURIVENDQWdXZ0F3SUJBZ0lRSitueHpuck9pMEYrbG1ZbFlhazFPVEFOQmdrcWhraUc5dzBCQVFzRkFEQVoKTVJjd0ZRWURWUVFERXc1M1pXSnZiMnN0Y205dmRDMWpZVEFlRncweU1qQTVNVFl4TVRVd01qbGFGdzB6TWpBNQpNVE14TVRVd01qbGFNQmt4RnpBVkJnTlZCQU1URG5kbFltOXZheTF5YjI5MExXTmhNSUlCSWpBTkJna3Foa2lHCjl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUEwemV5STVpTDJ1Nlg3dmNVbHRPajhaQitvdUZhUXptT0NsMWIKL21oazVYY2RJMXdKeVVaZ2FNTFBuSFd0REV1ZjN4eWYvS1N3NG1kWTdCWHVQdUpNQXdvaVFhRmZtejEyakZkSgp4WGhWV2NQTEJHZTVQQWY0eEx1V3ovNWlQMWxvb2R5RjdCbXpUQmc5TU43N2h5bTFvWVBjWE5va3RQelZwQml2Ck9TaXNmMm9rYTVFYjNNalh1SlpLbmkrSE42SThtbGdLUERVWnBKK05uNjVnRC9QdjNvQzBWODhabVhhbHVaaGsKVHlvV2JHNzlyaEVoYWRBV21ISkZYMzkxdHZLbFpKU1JaRlFNd1c2NmxHRTRzTWw2dXFseTFIeWUyTXpuRXFMSApkdExwSXZkTlU4dHNyWkhQWktJMThvTTA5V3ZJMC9rbkZOZlRQUkM4OFcrdmJTd3JoUUlEQVFBQm8yRXdYekFPCkJnTlZIUThCQWY4RUJBTUNBcVF3SFFZRFZSMGxCQll3RkFZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ01BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGTGZVcWdaSmQra3I2ZlBLb3Fiem9ZMG9aVmU0TUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQkFRQTVnNFlNMGE5d3k1dkxGUWJ5b1ZhcWYwREFFS1BzWHlpRGQxNk1adXZqCkZuMHVoVURiUXYxMGl5TUdZUEVnUmFyTmNtMXRDTFl6ZnBnQWRpWWpCUmROMTQzY0RFZUJGNXB4YklwV1FEQnMKRGwzeFNscm8xZzZxMjBrakxXMFB0Njk2Ri9PNHl2dm8vT1hTcHA5M05KbmpDbkxDS3Rsam91cTFySmZJc2diVgpDRm1iZTNNZHhhSW5YOVpZWVh4a0MxZ0Y4VzZBVjJzNXd6dXJSeFJNVDY2Zk5CQW1DT2s1T1BKNzYwVW44Y3BICjl5RkdoMnpCeWVEWFB0bEVEOS94Nkp2aXVCT2k0d3M4dHg0L0t3eStxSzl5M1NkQWFpN1NQRTMzY0daYUV4bi8KaDM5NnFYQXQ5c3V6QnZZWkdZeTNoQlVrMDYyL2pTSkpnMnJpRzZFenRJUG0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURIVENDQWdXZ0F3SUJBZ0lRRmNObUxISzVoNGdEMUFiTFRwK3VrekFOQmdrcWhraUc5dzBCQVFzRkFEQVoKTVJjd0ZRWURWUVFERXc1M1pXSnZiMnN0Y205dmRDMWpZVEFlRncweU1qRXhNalF4TXpNek1UaGFGdzB6TWpFeApNakV4TXpNek1UaGFNQmt4RnpBVkJnTlZCQU1URG5kbFltOXZheTF5YjI5MExXTmhNSUlCSWpBTkJna3Foa2lHCjl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFva1hsaEJkd2pPYmNheU5pVkU5SDUxK0Z6V3JYME1VMDZWdTYKNk5MYmJQSSszUi9DM3FjUUVXbHlFK3VNMEJyL0w0WHlZR0V6RGJRWDdqdXErc05uZTdFditXTFI0aytsc29sUgorSkNCbjJmcnRMdE1qMVRWcGVESmp3UjBpVDA3SGFraVV5WCs5STRpMERPZXhJNW51U1hOK09ZVzEzeUdJbFVpCnhhMVpCRHpNMVNEOUZuZ2VCM1p3bnI1MEtaWXV6NHpJU0RQZjhnazNyc3ZMbW9CSFZkdUtzTHh4TGIyOGVmU2gKcEFBVkdyUkZzWE10MWg1QXgzY29hYTZodG0vS3JiNU5pV0xqekNxdTZXcmlqMnVrR3pnUTZ6dEtybnlxQlNDZApJaUROSWtZSWhhNlJVR3k3Wk1oTDlXN2pEeHFrQ2prRGxLcjRDZkxkaGx1a3VrVHJRd0lEQVFBQm8yRXdYekFPCkJnTlZIUThCQWY4RUJBTUNBcVF3SFFZRFZSMGxCQll3RkFZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ01BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGTWJIaElLUkU3N2JlQk9PZTZROG15MHFCNVUvTUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQkFRQW9pQklvb2JORjF0ZXNGcHJpdXpiK1l3TGZVeEUvQjUwNklaRHFnVW1YCmNwdHhzS3dxaEZtY0kzZ1dpbXRPZUZ6MGZ5TmppTlhOZXJISmh2M0hmdTdzZHI1cy84TjNPdG03WFlnVU1MNnAKbjJXNFlnWE5vUUpQeC9LZVBIdHZYZHhPK0V3a1EvK0xUMkdINytLUDlxMU9sTU5jb29IRTlIc0ZlQkZZVFk5OAp0eHo0ZTFzTXdkVW4yWVpRampUWS9KaVlTa1czeXNwL20wY29oMTNMODZvRUVrSkF5UVpBQ3h0akQrVzd0bkViCkNPblN0THhQWEVGN1BLWFRicEc5M1VDUEJQdXpvb3JYblJmM3ZVcmt5Yk1oN0VBdmxvRVBMQnhtQmZzQWFBU3kKeDUvTmEvWDRLQ3p6VHZzNGcrd3FBMXVSSytNREo0Zklod0ZJU2FOZW5BSjgKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
     service:
       name: pulsar-operator-pulsar-operator-webhook-service
       namespace: pulsar-operator
@@ -2138,7 +2260,7 @@ webhooks:
   - v1
   - v1beta1
   clientConfig:
-    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURIVENDQWdXZ0F3SUJBZ0lRSitueHpuck9pMEYrbG1ZbFlhazFPVEFOQmdrcWhraUc5dzBCQVFzRkFEQVoKTVJjd0ZRWURWUVFERXc1M1pXSnZiMnN0Y205dmRDMWpZVEFlRncweU1qQTVNVFl4TVRVd01qbGFGdzB6TWpBNQpNVE14TVRVd01qbGFNQmt4RnpBVkJnTlZCQU1URG5kbFltOXZheTF5YjI5MExXTmhNSUlCSWpBTkJna3Foa2lHCjl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUEwemV5STVpTDJ1Nlg3dmNVbHRPajhaQitvdUZhUXptT0NsMWIKL21oazVYY2RJMXdKeVVaZ2FNTFBuSFd0REV1ZjN4eWYvS1N3NG1kWTdCWHVQdUpNQXdvaVFhRmZtejEyakZkSgp4WGhWV2NQTEJHZTVQQWY0eEx1V3ovNWlQMWxvb2R5RjdCbXpUQmc5TU43N2h5bTFvWVBjWE5va3RQelZwQml2Ck9TaXNmMm9rYTVFYjNNalh1SlpLbmkrSE42SThtbGdLUERVWnBKK05uNjVnRC9QdjNvQzBWODhabVhhbHVaaGsKVHlvV2JHNzlyaEVoYWRBV21ISkZYMzkxdHZLbFpKU1JaRlFNd1c2NmxHRTRzTWw2dXFseTFIeWUyTXpuRXFMSApkdExwSXZkTlU4dHNyWkhQWktJMThvTTA5V3ZJMC9rbkZOZlRQUkM4OFcrdmJTd3JoUUlEQVFBQm8yRXdYekFPCkJnTlZIUThCQWY4RUJBTUNBcVF3SFFZRFZSMGxCQll3RkFZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ01BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGTGZVcWdaSmQra3I2ZlBLb3Fiem9ZMG9aVmU0TUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQkFRQTVnNFlNMGE5d3k1dkxGUWJ5b1ZhcWYwREFFS1BzWHlpRGQxNk1adXZqCkZuMHVoVURiUXYxMGl5TUdZUEVnUmFyTmNtMXRDTFl6ZnBnQWRpWWpCUmROMTQzY0RFZUJGNXB4YklwV1FEQnMKRGwzeFNscm8xZzZxMjBrakxXMFB0Njk2Ri9PNHl2dm8vT1hTcHA5M05KbmpDbkxDS3Rsam91cTFySmZJc2diVgpDRm1iZTNNZHhhSW5YOVpZWVh4a0MxZ0Y4VzZBVjJzNXd6dXJSeFJNVDY2Zk5CQW1DT2s1T1BKNzYwVW44Y3BICjl5RkdoMnpCeWVEWFB0bEVEOS94Nkp2aXVCT2k0d3M4dHg0L0t3eStxSzl5M1NkQWFpN1NQRTMzY0daYUV4bi8KaDM5NnFYQXQ5c3V6QnZZWkdZeTNoQlVrMDYyL2pTSkpnMnJpRzZFenRJUG0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURIVENDQWdXZ0F3SUJBZ0lRRmNObUxISzVoNGdEMUFiTFRwK3VrekFOQmdrcWhraUc5dzBCQVFzRkFEQVoKTVJjd0ZRWURWUVFERXc1M1pXSnZiMnN0Y205dmRDMWpZVEFlRncweU1qRXhNalF4TXpNek1UaGFGdzB6TWpFeApNakV4TXpNek1UaGFNQmt4RnpBVkJnTlZCQU1URG5kbFltOXZheTF5YjI5MExXTmhNSUlCSWpBTkJna3Foa2lHCjl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFva1hsaEJkd2pPYmNheU5pVkU5SDUxK0Z6V3JYME1VMDZWdTYKNk5MYmJQSSszUi9DM3FjUUVXbHlFK3VNMEJyL0w0WHlZR0V6RGJRWDdqdXErc05uZTdFditXTFI0aytsc29sUgorSkNCbjJmcnRMdE1qMVRWcGVESmp3UjBpVDA3SGFraVV5WCs5STRpMERPZXhJNW51U1hOK09ZVzEzeUdJbFVpCnhhMVpCRHpNMVNEOUZuZ2VCM1p3bnI1MEtaWXV6NHpJU0RQZjhnazNyc3ZMbW9CSFZkdUtzTHh4TGIyOGVmU2gKcEFBVkdyUkZzWE10MWg1QXgzY29hYTZodG0vS3JiNU5pV0xqekNxdTZXcmlqMnVrR3pnUTZ6dEtybnlxQlNDZApJaUROSWtZSWhhNlJVR3k3Wk1oTDlXN2pEeHFrQ2prRGxLcjRDZkxkaGx1a3VrVHJRd0lEQVFBQm8yRXdYekFPCkJnTlZIUThCQWY4RUJBTUNBcVF3SFFZRFZSMGxCQll3RkFZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ01BOEcKQTFVZEV3RUIvd1FGTUFNQkFmOHdIUVlEVlIwT0JCWUVGTWJIaElLUkU3N2JlQk9PZTZROG15MHFCNVUvTUEwRwpDU3FHU0liM0RRRUJDd1VBQTRJQkFRQW9pQklvb2JORjF0ZXNGcHJpdXpiK1l3TGZVeEUvQjUwNklaRHFnVW1YCmNwdHhzS3dxaEZtY0kzZ1dpbXRPZUZ6MGZ5TmppTlhOZXJISmh2M0hmdTdzZHI1cy84TjNPdG03WFlnVU1MNnAKbjJXNFlnWE5vUUpQeC9LZVBIdHZYZHhPK0V3a1EvK0xUMkdINytLUDlxMU9sTU5jb29IRTlIc0ZlQkZZVFk5OAp0eHo0ZTFzTXdkVW4yWVpRampUWS9KaVlTa1czeXNwL20wY29oMTNMODZvRUVrSkF5UVpBQ3h0akQrVzd0bkViCkNPblN0THhQWEVGN1BLWFRicEc5M1VDUEJQdXpvb3JYblJmM3ZVcmt5Yk1oN0VBdmxvRVBMQnhtQmZzQWFBU3kKeDUvTmEvWDRLQ3p6VHZzNGcrd3FBMXVSSytNREo0Zklod0ZJU2FOZW5BSjgKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
     service:
       name: pulsar-operator-pulsar-operator-webhook-service
       namespace: pulsar-operator
