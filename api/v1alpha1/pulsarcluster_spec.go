@@ -22,6 +22,7 @@ import (
 	"github.com/monimesl/operator-helper/k8s/pod"
 	"github.com/monimesl/pulsar-operator/internal"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	"math"
 	"strconv"
 	"strings"
@@ -33,6 +34,7 @@ const (
 	DefaultBrokerSetupImageVersion    = "latest"
 	DefaultBrokerSetupImagePullPolicy = "Always"
 	defaultImageTag                   = "2.10.1"
+	defaultBrokerPersistenceSize      = "8Gi"
 )
 
 const (
@@ -105,7 +107,8 @@ type PulsarClusterSpec struct {
 	// JVMOptions defines the JVM options for pulsar broker; this is useful for performance tuning.
 	// If unspecified, a reasonable defaults will be set
 	// +optional
-	JVMOptions JVMOptions `json:"jvmOptions"`
+	JVMOptions  JVMOptions                    `json:"jvmOptions"`
+	Persistence *v1.PersistentVolumeClaimSpec `json:"persistence,omitempty"`
 	// PodConfig defines common configuration for the broker pods
 	// +optional
 	PodConfig basetype.PodConfig `json:"podConfig,omitempty"`
@@ -283,6 +286,17 @@ func (in *PulsarClusterSpec) setDefaults() (changed bool) {
 	}
 	if in.JVMOptions.setDefaults() {
 		changed = true
+	}
+	if in.Persistence == nil {
+		changed = true
+		in.Persistence = &v1.PersistentVolumeClaimSpec{
+			AccessModes: []v1.PersistentVolumeAccessMode{v1.ReadWriteOnce},
+			Resources: v1.ResourceRequirements{
+				Requests: v1.ResourceList{
+					v1.ResourceStorage: resource.MustParse(defaultBrokerPersistenceSize),
+				},
+			},
+		}
 	}
 	if in.PodConfig.Spec.TerminationGracePeriodSeconds == nil {
 		changed = true

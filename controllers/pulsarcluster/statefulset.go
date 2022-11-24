@@ -26,14 +26,12 @@ import (
 	"github.com/monimesl/pulsar-operator/api/v1alpha1"
 	v1 "k8s.io/api/apps/v1"
 	v12 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"strings"
 )
 
 const (
-	brokerSetupPvcSize  = "10Gi"
 	dataVolumeMouthPath = "/data"
 )
 
@@ -237,12 +235,6 @@ func createPersistentVolumeClaims(c *v1alpha1.PulsarCluster) []v12.PersistentVol
 	return []v12.PersistentVolumeClaim{
 		pvc.New(c.Namespace, c.BrokersDataPvcName(),
 			c.GenerateLabels(true),
-			v12.PersistentVolumeClaimSpec{
-				Resources: v12.ResourceRequirements{
-					Requests: map[v12.ResourceName]resource.Quantity{
-						v12.ResourceStorage: resource.MustParse(brokerSetupPvcSize),
-					}},
-				AccessModes: []v12.PersistentVolumeAccessMode{v12.ReadWriteOnce},
-			}),
+			*c.Spec.Persistence),
 	}
 }
