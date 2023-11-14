@@ -1,7 +1,12 @@
 apiVersion: pulsar.monime.sl/v1alpha1
 kind: PulsarManager
 metadata:
+  labels:
+    app.kubernetes.io/name: pulsarmanager
+    app.kubernetes.io/instance: pulsarmanager-sample
+    app.kubernetes.io/part-of: pulsar-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: pulsar-operator
   name: pulsarmanager-sample
 spec:
-  # Add fields here
-  foo: bar
+  # TODO(user): Add fields here

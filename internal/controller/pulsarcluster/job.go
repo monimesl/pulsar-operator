@@ -47,7 +47,7 @@ func reconcileClusterMetadataInitJob(ctx reconciler.Context, cluster *v1alpha1.P
 					cluster.Status.Metadata.Stage = v1alpha1.ClusterStageInitialized
 					if err = ctx.Client().Status().Update(context.TODO(), cluster); err == nil {
 						ctx.Logger().Info("Pulsar cluster metadata initialization successful. ",
-							"cluster", cluster.GetClusterName(),
+							"cluster", cluster.GetName(),
 							"Job.Name", jb.GetName(),
 							"Job.Namespace", jb.GetNamespace())
 					}
@@ -57,7 +57,7 @@ func reconcileClusterMetadataInitJob(ctx reconciler.Context, cluster *v1alpha1.P
 					ctx.Logger().Error(err,
 						err1.Error(),
 
-						"cluster", cluster.GetClusterName(),
+						"cluster", cluster.GetName(),
 						"Job.Name", jb.GetName(),
 						"Job.Namespace", jb.GetNamespace(),
 						"Job.FailureCount", jb.Status.Failed)

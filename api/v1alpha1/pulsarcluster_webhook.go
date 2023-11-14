@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+//nolint:dupl
 package v1alpha1
 
 import (
@@ -21,6 +22,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
+	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 )
 
 // SetupWebhookWithManager needed for webhook test suite
@@ -49,19 +51,19 @@ func (in *PulsarCluster) Default() {
 var _ webhook.Validator = &PulsarCluster{}
 
 // ValidateCreate implements webhook.Validator so a webhook will be registered for the type
-func (in *PulsarCluster) ValidateCreate() error {
+func (in *PulsarCluster) ValidateCreate() (admission.Warnings, error) {
 	config.RequireRootLogger().Info("[validate create]", "name", in.Name)
-	return nil
+	return nil, nil
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
-func (in *PulsarCluster) ValidateUpdate(_ runtime.Object) error {
+func (in *PulsarCluster) ValidateUpdate(_ runtime.Object) (admission.Warnings, error) {
 	config.RequireRootLogger().Info("[validate update]", "name", in.Name)
-	return nil
+	return nil, nil
 }
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
-func (in *PulsarCluster) ValidateDelete() error {
+func (in *PulsarCluster) ValidateDelete() (admission.Warnings, error) {
 	config.RequireRootLogger().Info("[validate delete]", "name", in.Name)
-	return nil
+	return nil, nil
 }

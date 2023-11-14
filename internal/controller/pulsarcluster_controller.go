@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package controllers
+package controller
 
 import (
 	"context"
 	"github.com/monimesl/operator-helper/reconciler"
-	"github.com/monimesl/pulsar-operator/controllers/pulsarcluster"
+	pulsarcluster2 "github.com/monimesl/pulsar-operator/internal/controller/pulsarcluster"
 	v12 "k8s.io/api/apps/v1"
 	v13 "k8s.io/api/batch/v1"
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/api/policy/v1beta1"
+	v14 "k8s.io/api/policy/v1"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	pulsarv1alpha1 "github.com/monimesl/pulsar-operator/api/v1alpha1"
@@ -33,10 +33,11 @@ var (
 	_                     reconciler.Context    = &PulsarClusterReconciler{}
 	_                     reconciler.Reconciler = &PulsarClusterReconciler{}
 	clusterReconcileFuncs                       = []func(ctx reconciler.Context, cluster *pulsarv1alpha1.PulsarCluster) error{
-		pulsarcluster.ReconcileServices,
-		pulsarcluster.ReconcileConfigMap,
-		pulsarcluster.ReconcileJob,
-		pulsarcluster.ReconcileStatefulSet,
+		pulsarcluster2.ReconcilePodDisruptionBudget,
+		pulsarcluster2.ReconcileServices,
+		pulsarcluster2.ReconcileConfigMap,
+		pulsarcluster2.ReconcileJob,
+		pulsarcluster2.ReconcileStatefulSet,
 	}
 )
 
@@ -50,7 +51,7 @@ func (r *PulsarClusterReconciler) Configure(ctx reconciler.Context) error {
 	r.Context = ctx
 	return ctx.NewControllerBuilder().
 		For(&pulsarv1alpha1.PulsarCluster{}).
-		Owns(&v1beta1.PodDisruptionBudget{}).
+		Owns(&v14.PodDisruptionBudget{}).
 		Owns(&v12.StatefulSet{}).
 		Owns(&v1.ConfigMap{}).
 		Owns(&v1.Service{}).

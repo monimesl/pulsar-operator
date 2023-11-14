@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Build the operator binary
-FROM golang:1.16 as builder
+FROM golang:1.20 as builder
 
 WORKDIR /workspace
 # Copy the Go Modules manifests
@@ -30,7 +30,6 @@ RUN go mod download
 COPY main.go main.go
 COPY api api/
 COPY internal internal/
-COPY controllers controllers/
 
 # Run after copying so the files are generated into
 # the docker's api/ folder instead of the host

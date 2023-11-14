@@ -225,7 +225,7 @@ func (in *JVMOptions) setDefaults() (changed bool) {
 				"-Dio.netty.recycler.maxCapacity.default=1000 "+
 				"-Dio.netty.recycler.linkCapacity=1024", " ")
 	}
-	return
+	return changed
 }
 
 // setDefaults set the defaults for the cluster spec and returns true otherwise false
@@ -302,7 +302,7 @@ func (in *PulsarClusterSpec) setDefaults() (changed bool) {
 		changed = true
 		in.PodConfig.Spec.TerminationGracePeriodSeconds = &defaultTerminationGracePeriod
 	}
-	return
+	return changed
 }
 
 func (in *PulsarClusterSpec) VersionInt() int {

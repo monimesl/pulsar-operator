@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package controllers
+package controller
 
 import (
 	"context"
 	"github.com/monimesl/operator-helper/reconciler"
 	v12 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/api/policy/v1beta1"
+	v13 "k8s.io/api/policy/v1"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	pulsarv1alpha1 "github.com/monimesl/pulsar-operator/api/v1alpha1"
@@ -43,7 +43,7 @@ func (r *PulsarProxyReconciler) Configure(ctx reconciler.Context) error {
 	r.Context = ctx
 	return ctx.NewControllerBuilder().
 		For(&pulsarv1alpha1.PulsarProxy{}).
-		Owns(&v1beta1.PodDisruptionBudget{}).
+		Owns(&v13.PodDisruptionBudget{}).
 		Owns(&v12.StatefulSet{}).
 		Owns(&v1.ConfigMap{}).
 		Owns(&v1.Service{}).

@@ -19,8 +19,8 @@ package pulsarcluster
 import (
 	"fmt"
 	"github.com/monimesl/operator-helper/oputil"
-	"github.com/prometheus/common/log"
 	v1 "k8s.io/api/core/v1"
+	"log"
 	"strings"
 )
 
@@ -44,7 +44,7 @@ func processEnvVars(envs []v1.EnvVar) []v1.EnvVar {
 			name = fmt.Sprintf("%s%s", pulsarConfigEnvPrefix, name)
 		}
 		if oputil.Contains(notAllowedVariables, name) {
-			log.Warnf("ignoring the config: %s", actual)
+			log.Printf("ignoring the config: %s", actual)
 			continue
 		}
 		env.Name = name
@@ -62,7 +62,7 @@ func processEnvVarMap(envs map[string]string, ignoreNotAllowedVars bool) map[str
 			name = fmt.Sprintf("%s%s", pulsarConfigEnvPrefix, name)
 		}
 		if ignoreNotAllowedVars && oputil.Contains(notAllowedVariables, name) {
-			log.Warnf("ignoring the config: %s", actual)
+			log.Printf("ignoring the config: %s", actual)
 			continue
 		}
 		newEnvs[name] = v

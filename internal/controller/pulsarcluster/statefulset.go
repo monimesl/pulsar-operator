@@ -205,27 +205,27 @@ func createContainerPorts(c *v1alpha1.PulsarCluster) []v12.ContainerPort {
 }
 
 func createStartupProbe(spec v1alpha1.PulsarClusterSpec, port int32) *v12.Probe {
-	return spec.ProbeConfig.Startup.ToK8sProbe(v12.Handler{
+	return spec.ProbeConfig.Startup.ToK8sProbe(v12.ProbeHandler{
 		HTTPGet: &v12.HTTPGetAction{
-			Port: intstr.FromInt(int(port)),
+			Port: intstr.FromInt32(port),
 			Path: "/status.html",
 		},
 	})
 }
 
 func createReadinessProbe(spec v1alpha1.PulsarClusterSpec, port int32) *v12.Probe {
-	return spec.ProbeConfig.Readiness.ToK8sProbe(v12.Handler{
+	return spec.ProbeConfig.Readiness.ToK8sProbe(v12.ProbeHandler{
 		HTTPGet: &v12.HTTPGetAction{
-			Port: intstr.FromInt(int(port)),
+			Port: intstr.FromInt32(port),
 			Path: "/status.html",
 		},
 	})
 }
 
 func createLivenessProbe(spec v1alpha1.PulsarClusterSpec, port int32) *v12.Probe {
-	return spec.ProbeConfig.Readiness.ToK8sProbe(v12.Handler{
+	return spec.ProbeConfig.Readiness.ToK8sProbe(v12.ProbeHandler{
 		HTTPGet: &v12.HTTPGetAction{
-			Port: intstr.FromInt(int(port)),
+			Port: intstr.FromInt32(port),
 			Path: "/status.html",
 		},
 	})

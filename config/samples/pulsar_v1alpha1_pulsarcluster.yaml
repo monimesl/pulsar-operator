@@ -1,17 +1,12 @@
 apiVersion: pulsar.monime.sl/v1alpha1
 kind: PulsarCluster
 metadata:
-  name: cluster-1
-  namespace: pulsar
+  labels:
+    app.kubernetes.io/name: pulsarcluster
+    app.kubernetes.io/instance: pulsarcluster-sample
+    app.kubernetes.io/part-of: pulsar-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: pulsar-operator
+  name: pulsarcluster-sample
 spec:
-  size: 1
-  zookeeperServers: "cluster-1-zk-headless.zookeeper.svc.cluster.local:2181"
-  bookkeeperClusterUri: "zk://cluster-1-zk-headless.zookeeper.svc.cluster.local:2181/bookkeeper/cluster-1/ledgers"
-  jvmOptions:
-    memory:
-      - "-Xms128m"
-      - "-Xmx256m"
-      - "-XX:MaxDirectMemorySize=256m"
-  connectors:
-    builtin:
-      - "aerospike"
+  # TODO(user): Add fields here
