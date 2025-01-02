@@ -18,7 +18,9 @@ package pulsarcluster
 
 import (
 	"fmt"
+	"github.com/monimesl/operator-helper/k8s"
 	"github.com/monimesl/operator-helper/oputil"
+	"github.com/monimesl/pulsar-operator/api/v1alpha1"
 	v1 "k8s.io/api/core/v1"
 	"log"
 	"strings"
@@ -80,4 +82,25 @@ func addPulsarEnvPrefix(envs []string) []string {
 		newEnvs[i] = env
 	}
 	return envs
+}
+
+func getBrokerSelectorLabels(c *v1alpha1.PulsarCluster, broker bool) map[string]string {
+	labels := c.GenerateLabels(broker)
+	out := make(map[string]string)
+	for k, v := range labels {
+		if _, found := c.Labels[k]; found {
+			continue
+		}
+		if _, found := c.Spec.Labels[k]; found {
+			continue
+		}
+		switch k {
+		case "version":
+			continue
+		case k8s.LabelAppVersion:
+			continue
+		}
+		out[k] = v
+	}
+	return out
 }

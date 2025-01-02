@@ -18,6 +18,7 @@ package pulsarcluster
 
 import (
 	"context"
+	"github.com/monimesl/operator-helper/k8s"
 	"github.com/monimesl/operator-helper/reconciler"
 	"github.com/monimesl/pulsar-operator/api/v1alpha1"
 	v1 "k8s.io/api/policy/v1"
@@ -38,16 +39,13 @@ func reconcilePodDisruptionBudget(ctx reconciler.Context, cluster *v1alpha1.Puls
 		Name:      cluster.Name,
 		Namespace: cluster.Namespace,
 	}, pdb,
+		// Found
 		func() error {
-			newMaxFailureNodes := calculateMaxAllowedFailureNodes(cluster)
-			if newMaxFailureNodes.IntVal != pdb.Spec.MaxUnavailable.IntVal {
-				pdb.Spec.MaxUnavailable.IntVal = newMaxFailureNodes.IntVal
-				ctx.Logger().Info("Updating the zookeeper poddisruptionbudget for cluster",
-					"cluster", cluster.Name,
-					"PodDisruptionBudget.Name", pdb.GetName(),
-					"PodDisruptionBudget.Namespace", pdb.GetNamespace(),
-					"MaxUnavailable", pdb.Spec.MaxUnavailable.IntVal)
-				return ctx.Client().Update(context.TODO(), pdb)
+			if shouldUpdatePDB(cluster.Spec, pdb) {
+				if err = updatePodDisruptionBudget(ctx, pdb, cluster); err != nil {
+					return err
+				}
+				return nil
 			}
 			return nil
 		},
@@ -87,14 +85,36 @@ func createPodDisruptionBudget(cluster *v1alpha1.PulsarCluster) *v1.PodDisruptio
 			APIVersion: "policy/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Namespace: cluster.Namespace,
 			Name:      cluster.Name,
+			Namespace: cluster.Namespace,
+			Labels:    cluster.GenerateLabels(true),
 		},
 		Spec: v1.PodDisruptionBudgetSpec{
 			MaxUnavailable: &newMaxFailureNodes,
 			Selector: &metav1.LabelSelector{
-				MatchLabels: cluster.GenerateLabels(true),
+				MatchLabels: getBrokerSelectorLabels(cluster, true),
 			},
 		},
 	}
+}
+
+func updatePodDisruptionBudget(ctx reconciler.Context, pdb *v1.PodDisruptionBudget, c *v1alpha1.PulsarCluster) error {
+	newMaxFailureNodes := intstr.FromInt32(c.Spec.MaxUnavailableNodes)
+	pdb.Labels = c.GenerateLabels(true)
+	pdb.Spec.MaxUnavailable.IntVal = newMaxFailureNodes.IntVal
+	pdb.Spec.Selector.MatchLabels = getBrokerSelectorLabels(c, true)
+	ctx.Logger().Info("Updating the bookkeeper poddisruptionbudget for cluster",
+		"cluster", c.Name,
+		"PodDisruptionBudget.Name", pdb.GetName(),
+		"PodDisruptionBudget.Namespace", pdb.GetNamespace(),
+		"MaxUnavailable", pdb.Spec.MaxUnavailable.IntVal)
+	return ctx.Client().Update(context.TODO(), pdb)
+}
+
+func shouldUpdatePDB(spec v1alpha1.PulsarClusterSpec, pdb *v1.PodDisruptionBudget) bool {
+	if spec.PulsarVersion != pdb.Labels[k8s.LabelAppVersion] {
+		return true
+	}
+	newMaxFailureNodes := intstr.FromInt32(spec.MaxUnavailableNodes)
+	return newMaxFailureNodes.IntVal != pdb.Spec.MaxUnavailable.IntVal
 }

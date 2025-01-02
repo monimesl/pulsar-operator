@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+//nolint:dupl
 package controller
 
 import (

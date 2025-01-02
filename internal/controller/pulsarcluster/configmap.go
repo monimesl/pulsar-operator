@@ -33,7 +33,13 @@ func ReconcileConfigMap(ctx reconciler.Context, cluster *v1alpha1.PulsarCluster)
 		Name:      cluster.ConfigMapName(),
 		Namespace: cluster.Namespace,
 	}, cm,
-		nil,
+		// Found
+		func() error {
+			if err := updateConfigmap(ctx, cm, cluster); err != nil {
+				return err
+			}
+			return nil
+		},
 		// Not Found
 		func() (err error) {
 			cm = createConfigMap(cluster)
@@ -51,25 +57,40 @@ func ReconcileConfigMap(ctx reconciler.Context, cluster *v1alpha1.PulsarCluster)
 		})
 }
 
-func createConfigMap(cluster *v1alpha1.PulsarCluster) *v1.ConfigMap {
-	jvmOptions := cluster.Spec.JVMOptions
+func createConfigMap(c *v1alpha1.PulsarCluster) *v1.ConfigMap {
+	data := createConfigmapData(c)
+	cm := configmap.New(c.Namespace, c.ConfigMapName(), data)
+	cm.Labels = c.GenerateLabels(true)
+	return cm
+}
+
+func updateConfigmap(ctx reconciler.Context, cm *v1.ConfigMap, c *v1alpha1.PulsarCluster) error {
+	ctx.Logger().Info("Updating the bookkeeper configmap.",
+		"configMap.Name", cm.GetName(),
+		"ConfigMap.Namespace", cm.GetNamespace(), "NewReplicas", c.Spec.Size)
+	cm.Labels = c.GenerateLabels(true)
+	cm.Data = createConfigmapData(c)
+	return ctx.Client().Update(context.TODO(), cm)
+}
+
+func createConfigmapData(c *v1alpha1.PulsarCluster) map[string]string {
+	jvmOptions := c.Spec.JVMOptions
 	data := processEnvVarMap(map[string]string{
 		"managedLedgerDefaultEnsembleSize": "1",
 		"managedLedgerDefaultWriteQuorum":  "1",
 		"managedLedgerDefaultAckQuorum":    "1",
 		"statusFilePath":                   "/pulsar/status",
-		"clusterName":                      cluster.GetName(),
-		"zookeeperServers":                 cluster.Spec.ZookeeperServers,
-		"bookkeeperMetadataServiceUri":     cluster.Spec.BookkeeperClusterUri,
-		"configurationStoreServers":        cluster.Spec.ConfigurationStoreServers,
+		"clusterName":                      c.GetName(),
+		"zookeeperServers":                 c.Spec.ZookeeperServers,
+		"bookkeeperMetadataServiceUri":     c.Spec.BookkeeperClusterUri,
+		"configurationStoreServers":        c.Spec.ConfigurationStoreServers,
 		"PULSAR_GC":                        strings.Join(jvmOptions.Gc, " "),
 		"PULSAR_EXTRA_OPTS":                strings.Join(jvmOptions.Extra, " "),
 		"PULSAR_MEM":                       strings.Join(jvmOptions.Memory, " "),
 		"PULSAR_GC_LOG":                    strings.Join(jvmOptions.GcLogging, " "),
 	}, false)
-	for k, v := range processEnvVarMap(cluster.Spec.BrokerConfig, true) {
+	for k, v := range processEnvVarMap(c.Spec.BrokerConfig, true) {
 		data[k] = v
 	}
-	configMapData := processEnvVarMap(data, false)
-	return configmap.New(cluster.Namespace, cluster.ConfigMapName(), configMapData)
+	return processEnvVarMap(data, false)
 }

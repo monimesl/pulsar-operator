@@ -229,6 +229,8 @@ func (in *JVMOptions) setDefaults() (changed bool) {
 }
 
 // setDefaults set the defaults for the cluster spec and returns true otherwise false
+//
+//nolint:cyclop
 func (in *PulsarClusterSpec) setDefaults() (changed bool) {
 	if in.PulsarVersion == "" {
 		changed = true

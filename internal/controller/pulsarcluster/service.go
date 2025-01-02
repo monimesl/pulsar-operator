@@ -18,6 +18,7 @@ package pulsarcluster
 
 import (
 	"context"
+	"github.com/monimesl/operator-helper/k8s"
 	"github.com/monimesl/operator-helper/k8s/service"
 	"github.com/monimesl/operator-helper/reconciler"
 	"github.com/monimesl/pulsar-operator/api/v1alpha1"
@@ -33,13 +34,22 @@ func ReconcileServices(ctx reconciler.Context, cluster *v1alpha1.PulsarCluster) 
 	return
 }
 
+//nolint:dupl
 func reconcileClientService(ctx reconciler.Context, cluster *v1alpha1.PulsarCluster) error {
 	svc := &v1.Service{}
 	return ctx.GetResource(types.NamespacedName{
 		Name:      cluster.ClientServiceName(),
 		Namespace: cluster.Namespace,
 	}, svc,
-		nil,
+		// Found
+		func() error {
+			if shouldUpdateService(cluster.Spec, svc) {
+				if err := updateService(ctx, svc, cluster); err != nil {
+					return err
+				}
+			}
+			return nil
+		},
 		// Not Found
 		func() (err error) {
 			svc = createClientService(cluster)
@@ -57,13 +67,22 @@ func reconcileClientService(ctx reconciler.Context, cluster *v1alpha1.PulsarClus
 		})
 }
 
+//nolint:dupl
 func reconcileHeadlessService(ctx reconciler.Context, cluster *v1alpha1.PulsarCluster) error {
 	svc := &v1.Service{}
 	return ctx.GetResource(types.NamespacedName{
 		Name:      cluster.HeadlessServiceName(),
 		Namespace: cluster.Namespace,
 	}, svc,
-		nil,
+		// Found
+		func() error {
+			if shouldUpdateService(cluster.Spec, svc) {
+				if err := updateService(ctx, svc, cluster); err != nil {
+					return err
+				}
+			}
+			return nil
+		},
 		// Not Found
 		func() (err error) {
 			svc = createHeadlessService(cluster)
@@ -90,20 +109,29 @@ func createHeadlessService(c *v1alpha1.PulsarCluster) *v1.Service {
 }
 
 func createService(c *v1alpha1.PulsarCluster, name string, hasClusterIP bool, servicePorts []v1.ServicePort) *v1.Service {
-	labels := c.GenerateLabels(true)
 	clusterIP := ""
 	if !hasClusterIP {
 		clusterIP = v1.ClusterIPNone
 	}
-	srv := service.New(c.Namespace, name, labels, v1.ServiceSpec{
+	srv := service.New(c.Namespace, name, c.GenerateLabels(true), v1.ServiceSpec{
 		ClusterIP: clusterIP,
-		Selector:  labels,
+		Selector:  getBrokerSelectorLabels(c, true),
 		Ports:     servicePorts,
 	})
 	srv.Annotations = c.GenerateAnnotations()
 	return srv
 }
 
+func updateService(ctx reconciler.Context, svc *v1.Service, c *v1alpha1.PulsarCluster) error {
+	ctx.Logger().Info("Updating the bookkeeper service.",
+		"service.Name", svc.GetName(),
+		"Service.Namespace", svc.GetNamespace(), "NewReplicas", c.Spec.Size)
+	svc.Labels = c.GenerateLabels(true)
+	svc.Spec.Selector = getBrokerSelectorLabels(c, true)
+	return ctx.Client().Update(context.TODO(), svc)
+}
+
+//nolint:dupl
 func servicePorts(c *v1alpha1.PulsarCluster) []v1.ServicePort {
 	ports := c.Spec.Ports
 	svcPorts := []v1.ServicePort{{Name: v1alpha1.ClientPortName, Port: ports.Client}}
@@ -126,4 +154,8 @@ func servicePorts(c *v1alpha1.PulsarCluster) []v1.ServicePort {
 		}
 	}
 	return svcPorts
+}
+
+func shouldUpdateService(spec v1alpha1.PulsarClusterSpec, sts *v1.Service) bool {
+	return spec.PulsarVersion != sts.Labels[k8s.LabelAppVersion]
 }

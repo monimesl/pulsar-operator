@@ -19,6 +19,7 @@ package pulsarcluster
 import (
 	"context"
 	"fmt"
+	"github.com/monimesl/operator-helper/k8s"
 	"github.com/monimesl/operator-helper/k8s/pod"
 	"github.com/monimesl/operator-helper/k8s/pvc"
 	"github.com/monimesl/operator-helper/k8s/statefulset"
@@ -47,7 +48,7 @@ func ReconcileStatefulSet(ctx reconciler.Context, cluster *v1alpha1.PulsarCluste
 	}, sts,
 		// Found
 		func() error {
-			if *cluster.Spec.Size != *sts.Spec.Replicas {
+			if shouldUpdateStatefulSet(cluster.Spec, sts) {
 				if err := updateStatefulset(ctx, sts, cluster); err != nil {
 					return err
 				}
@@ -73,8 +74,20 @@ func ReconcileStatefulSet(ctx reconciler.Context, cluster *v1alpha1.PulsarCluste
 		})
 }
 
+func shouldUpdateStatefulSet(spec v1alpha1.PulsarClusterSpec, sts *v1.StatefulSet) bool {
+	if *spec.Size != *sts.Spec.Replicas {
+		return true
+	}
+	if spec.PulsarVersion != sts.Labels[k8s.LabelAppVersion] {
+		return true
+	}
+	return false
+}
+
 func updateStatefulset(ctx reconciler.Context, sts *v1.StatefulSet, cluster *v1alpha1.PulsarCluster) error {
 	sts.Spec.Replicas = cluster.Spec.Size
+	sts.Labels = cluster.GenerateLabels(true)
+	sts.Spec.Selector.MatchLabels = getBrokerSelectorLabels(cluster, true)
 	ctx.Logger().Info("Updating the pulsar broker  statefulset.",
 		"StatefulSet.Name", sts.GetName(),
 		"StatefulSet.Namespace", sts.GetNamespace(), "NewReplicas", cluster.Spec.Size)
@@ -83,10 +96,10 @@ func updateStatefulset(ctx reconciler.Context, sts *v1.StatefulSet, cluster *v1a
 
 func createStatefulSet(c *v1alpha1.PulsarCluster) *v1.StatefulSet {
 	pvcs := createPersistentVolumeClaims(c)
-	labels := c.GenerateLabels(true)
-	templateSpec := createPodTemplateSpec(c, labels)
-	spec := statefulset.NewSpec(*c.Spec.Size, c.HeadlessServiceName(), labels, pvcs, templateSpec)
-	sts := statefulset.New(c.Namespace, c.StatefulSetName(), labels, spec)
+	brokerSelectorLabels := getBrokerSelectorLabels(c, true)
+	templateSpec := createPodTemplateSpec(c, brokerSelectorLabels)
+	spec := statefulset.NewSpec(*c.Spec.Size, c.HeadlessServiceName(), brokerSelectorLabels, pvcs, templateSpec)
+	sts := statefulset.New(c.Namespace, c.StatefulSetName(), c.GenerateLabels(true), spec)
 	sts.Annotations = c.GenerateAnnotations()
 	return sts
 }
@@ -180,6 +193,7 @@ func generateConnectorString(c *v1alpha1.PulsarCluster) string {
 	return strings.Join(formats, " ")
 }
 
+//nolint:dupl
 func createContainerPorts(c *v1alpha1.PulsarCluster) []v12.ContainerPort {
 	ports := c.Spec.Ports
 	containerPorts := []v12.ContainerPort{{Name: v1alpha1.ClientPortName, ContainerPort: ports.Client}}
